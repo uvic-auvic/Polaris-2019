@@ -1,0 +1,5 @@
+launch>
+    <node name="json_data" pkg="monitor" type="json_data">
+    </node>
+</launch>
+
