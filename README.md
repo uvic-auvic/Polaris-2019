@@ -2,7 +2,17 @@
 
 All the code related to the operation of the polaris 2018 AUVIC submarine
 
-## Setting up your enviroment
+## Setting up your Environment
+
+### Docker
+
+0? (Windows) Use the windows linux subsystem, guide for how to do that is here: https://docs.microsoft.com/en-us/windows/wsl/install-win10
+
+1. Make sure docker is installed on your system.
+
+2. Use the docker_make.sh script to compile the program.
+
+### Ubuntu 16.04 (Traditional)
 
 1. Create a fork of the polaris repo and clone it in your ubuntu workspace `git clone https://github.com/yourusername/polaris.git`
 
