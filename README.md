@@ -1,12 +1,12 @@
 # Polaris Source Code
 
-All the code related to the operation of the polaris 2018 AUVIC submarine
+All the code related to the operation of the polaris 2019 AUVIC submarine
 
 ## Setting up your Environment
 
 ### Docker
 
-0? (Windows) Use the windows linux subsystem, guide for how to do that is here: https://docs.microsoft.com/en-us/windows/wsl/install-win10
+0. (Windows) Use the windows linux subsystem, guide for how to do that is here: https://docs.microsoft.com/en-us/windows/wsl/install-win10
 
 1. Make sure docker is installed on your system.
 
