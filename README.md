@@ -8,7 +8,7 @@ All the code related to the operation of the polaris 2019 AUVIC submarine
 
 Step 0 is required for windows users without Hyper-V support, as docker won't run on machines without Hyper-V enabled. Batch scripts will be in the works for Hyper-V capable machines.
 
-0. (Windows) Use the windows linux subsystem, guide for how to do that is here: https://docs.microsoft.com/en-us/windows/wsl/install-win10. More steps for this are required and will be added shortly.
+0. (Windows) **IGNORE** Use the windows linux subsystem, guide for how to do that is here: https://docs.microsoft.com/en-us/windows/wsl/install-win10. More steps for this are required and will be added shortly.
 
 1. Make sure docker is installed on your system.
 
