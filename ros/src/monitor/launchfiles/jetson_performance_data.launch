@@ -1,0 +1,4 @@
+<launch>
+    <node name="jetson_performance_data" pkg="monitor" type="jetson_performance_data">
+    </node>
+</launch>
