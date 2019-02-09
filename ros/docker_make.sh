@@ -10,7 +10,7 @@ docker pull auvic/polaris:polaris_dev
 # Check if the container has been created
 if [ ! "$( docker container ls -a | grep polaris_development)" ]; then
 	printf "${YEL}Docker container ${RED}not found${YEL}, creating new container.${NC}\n"
-	docker run -it --name polaris_development --mount src="$(pwd)",target=/usr/polaris,type=bind polaris_dev
+	docker run -it --name polaris_development --mount src="$(pwd)"/..,target=/usr/polaris,type=bind polaris_dev
 else
 	printf "${YEL}Docker container ${GRN}found${YEL}.${NC}\n"
 	docker start -a polaris_development
