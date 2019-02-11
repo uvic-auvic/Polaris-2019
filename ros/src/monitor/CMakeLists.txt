@@ -30,7 +30,7 @@ add_service_files(
 add_message_files(
   FILES
   SerialDevice.msg
-  JetsonData.msg
+  jetson_data_msg.msg
 )
 
 ## Generate added messages and services with any dependencies listed here
@@ -59,6 +59,6 @@ add_dependencies(serial_manager monitor_generate_messages_cpp ${catkin_EXPORTED_
 target_include_directories(serial_manager PUBLIC ${Boost_INCLUDE_DIRS})
 target_link_libraries(serial_manager ${catkin_LIBRARIES} ${serial_LIBRARIES})
 
-#add_executable(jetson_performance_data src/jetson_performance_data.cpp)
-#target_link_libraries(jetson_performance_data ${catkin_LIBRARIES})
-#add_dependencies(jetson_performance_data monitor_generate_messages_cpp ${catkin_EXPORTED_TARGETS})
+add_executable(jetson_data src/jetson_data.cpp)
+target_link_libraries(jetson_data ${catkin_LIBRARIES})
+add_dependencies(jetson_data monitor_generate_messages_cpp ${catkin_EXPORTED_TARGETS})

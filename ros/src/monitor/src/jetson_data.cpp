@@ -1,17 +1,12 @@
 #include <ros/ros.h>
-#include "std_msgs/String.h"
-#include "monitor/jetson_data.h"
+#include "monitor/jetson_data_msg.h"
 
-#include <string>
-#include <iostream>
-#include <sstream>
-#include <cstdio>
+#include <stdio.h>
 #include <memory>
-#include <stdexcept>
 #include <array>
 #include <math.h>
 
-void update_values(std::string input)
+void update_values(std::string input, monitor::jetson_data_msg &msg)
 {
     float values[200];
     int index = 0;
@@ -19,31 +14,26 @@ void update_values(std::string input)
     bool found_num = false;
     int period_found = 0;
 
-
     for(int i=0; i< input.length(); i++){
         char c = input[i];
         if(isdigit(c)){
             if(period_found > 0){
                 temp += (float)(c - '0')/pow(10.0, period_found);
                 period_found++;
-            }
-            else{
+            } else {
                 temp *= 10.0;
                 temp += (float)(c - '0');
             }
             found_num = true;
-        }
-        else if(c == '.'){
+        } else if(c == '.') {
             period_found++;
-        }
-        else if(found_num){
+        } else if(found_num) {
             values[index] = temp;
             index++;
             temp = 0.0;
             found_num = false;
             period_found = 0;
-        }
-        else{
+        } else {
             temp = 0.0;
             found_num = false;
             period_found = 0;
@@ -55,7 +45,6 @@ void update_values(std::string input)
             }
         }
     }
-    
     msg.RAM_N = (int)values[0];
     msg.RAM_D = (int)values[1];
     msg.CPU_usage_1 = (int)values[4];
@@ -83,17 +72,13 @@ void update_values(std::string input)
     msg.VDD_WIFI_D = (int)values[33];
     msg.VDD_DDR_N = (int)values[34];
     msg.VDD_DDR_D = (int)values[35];
-
-    for(int i = 0; i < index; i++){
-        std::cout << values[i] << std::endl;
-    }
 }
 
 int main(int argc, char **argv)
- {
-    ros::init(argc, argv, "talker");
+{
+    ros::init(argc, argv, "jetson_data_node");
     ros::NodeHandle nh;
-    ros::Publisher chatter_pub = nh.advertise<std_msgs::String>("chatter",5000);
+    ros::Publisher pub = nh.advertise<monitor::jetson_data_msg>("jetson_data_msg",10);
     ros::Rate loop_rate(10);
 
     std::array<char, 1024> buffer;
@@ -101,24 +86,19 @@ int main(int argc, char **argv)
     std::string prev_input = "";
     FILE* pipe = popen("/home/rorysmith/Desktop/filetoexe", "r");
 
-    if(!pipe) msg.ERROR = 1;
-    else msg.ERROR = 0;
-
     while(ros::ok()) {
+
+        monitor::jetson_data_msg msg;
+
         if(fgets(buffer.data(), 1024, pipe) != NULL) {
             input = buffer.data();
-            std::cout << "\n" << input << "\n";//remove
         }
         if(prev_input != input) {
-            update_values(input);
-        } 
+            update_values(input, msg);
+        }
         prev_input = input;
-
-        std_msgs::String msg;
-        std::stringstream ss;
-        msg.data = ss.str();
         
-        chatter_pub.publish(msg);
+        pub.publish(msg);
         ros::spinOnce();
         loop_rate.sleep();
     }

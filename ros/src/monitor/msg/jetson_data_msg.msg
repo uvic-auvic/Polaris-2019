@@ -1,4 +1,3 @@
-uint16 ERROR
 uint16 RAM_N
 uint16 RAM_D
 uint16 CPU_usage_1
@@ -13,7 +12,7 @@ float64 GPU_temp
 float64 PLL_temp
 float64 Tboard_temp
 float64 Tdiode_temp
-float64 PMIC_temdp
+float64 PMIC_temp
 int16 VDD_IN_N
 int16 VDD_IN_D
 int16 VDD_CPU_N
