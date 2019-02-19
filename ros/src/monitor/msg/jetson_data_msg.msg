@@ -13,6 +13,7 @@ float64 PLL_temp
 float64 Tboard_temp
 float64 Tdiode_temp
 float64 PMIC_temp
+float64 thermal
 int16 VDD_IN_N
 int16 VDD_IN_D
 int16 VDD_CPU_N
