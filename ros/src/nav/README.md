@@ -1,4 +1,5 @@
 # Navigation Package
+This package is responsible for the translation of the higher-level commands that are issued in terms of: depth, yaw_rate, forward velocity, and sideways velocity. And translating that into something that can be sent to the motors.
 
 ## Control System
 This is the system responsible for controlling how the submarine moves from commands given to it from the AI package. This involves translating the directions into values that the thrusters can use, and issuing commands to the thrusters to allow the submarine to move as directed from the AI package.
