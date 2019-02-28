@@ -49,6 +49,7 @@
   </script>
   <script src="js/ros_out.js" type="text/javascript" type="text/javascript"></script>
   <script src="js/topics/power_board.js" type="text/javascript" type="text/javascript"></script>
+  <script src="js/topics/onboard_sys_info.js" type="text/javascript" type="text/javascript"></script>
 
 </head>
 <body>
@@ -318,7 +319,7 @@
                 </p>
                 </td>
             </tr>
-          <tr>
+          <tr id="cpu_2">
             <td>CPU 2 Usage</td>
             <td>
               <p>
@@ -326,7 +327,7 @@
             </p>
             </td>
           </tr>
-          <tr>
+          <tr id="cpu_3">
             <td>CPU 3 Usage</td>
             <td>
                 <p>
@@ -334,7 +335,7 @@
               </p>
               </td>
           </tr>
-          <tr>
+          <tr id="cpu_4">
             <td>CPU 4 Usage</td>
             <td>
               <p>
@@ -342,7 +343,7 @@
             </p>
             </td>
           </tr>
-          <tr>
+          <tr id="cpu_5">
             <td>CPU 5 Usage</td>
             <td>
               <p>
@@ -350,7 +351,7 @@
             </p>
             </td>
           </tr>
-          <tr>
+          <tr id="cpu_6">
             <td>CPU 6 Usage</td>
             <td>
                 <p>
@@ -358,7 +359,7 @@
               </p>
               </td>
           </tr>
-          <tr>
+          <tr id="bcpu_temp">
             <td>BCPU Temperature</td>
             <td>
               <p>
@@ -366,7 +367,7 @@
             </p>
             </td>
           </tr>
-          <tr>
+          <tr id="mcpu_temp">
             <td>MCPU Temperature</td>
             <td>
               <p>
@@ -374,7 +375,7 @@
             </p>
             </td>
           </tr>
-          <tr>
+          <tr id="gpu_temp">
             <td>GPU Temperature</td>
             <td>
               <p>
@@ -382,7 +383,7 @@
             </p>
             </td>
           </tr>
-          <tr>
+          <tr id="pll_temp">
             <td>PLL Temperature</td>
             <td>
               <p>
@@ -390,7 +391,7 @@
             </p>
             </td>
           </tr>
-          <tr>
+          <tr id="tboard_temp">
             <td>Tboard Temperature</td>
             <td>
               <p>
@@ -398,7 +399,23 @@
             </p>
             </td>
           </tr>
-          <tr>
+          <tr id="tdiode_temp">
+            <td>Tboard Temperature</td>
+            <td>
+              <p>
+              <span id="tdiode_temp"></span> %
+            </p>
+            </td>
+          </tr>
+          <tr id="thermal">
+            <td>Tboard Temperature</td>
+            <td>
+              <p>
+              <span id="thermal"></span> %
+            </p>
+            </td>
+          </tr>
+          <tr id="pmic_temp">
             <td>PMIC Temperature</td>
             <td>
               <p>
@@ -406,7 +423,7 @@
             </p>
             </td>
           </tr>
-          <tr>
+          <tr id="vdd_in">
             <td>VDD In</td>
             <td>
               <p>
@@ -414,7 +431,7 @@
             </p>
             </td>
           </tr>
-          <tr>
+          <tr id="vdd_cpu">
             <td>VDD CPU</td>
             <td>
               <p>
@@ -422,7 +439,7 @@
             </p>
             </td>
           </tr>
-          <tr>
+          <tr id="vdd_gpu">
             <td>VDD GPU</td>
             <td>
               <p>
@@ -430,7 +447,7 @@
             </p>
             </td>
           </tr>
-          <tr>
+          <tr id="vdd_soc">
             <td>VDD SOC</td>
             <td>
               <p>
@@ -438,7 +455,7 @@
             </p>
             </td>
           </tr>
-          <tr>
+          <tr id="vdd_wifi">
             <td>VDD WIFI</td>
             <td>
               <p>
@@ -446,7 +463,7 @@
             </p>
             </td>
           </tr>
-          <tr>
+          <tr id="vdd_ddr">
             <td>VDD DDR</td>
             <td>
               <p>
