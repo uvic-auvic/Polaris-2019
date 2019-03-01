@@ -72,7 +72,7 @@ void update_values(std::string input, monitor::jetson_data_msg &msg)
     msg.Tboard_temp = values[20];
     msg.Tdiode_temp = values[21];
     msg.PMIC_temp = values[22];
-    msg.thermal = values[23];
+    msg.thermal = (int)values[23];
     msg.VDD_IN_N = (int)values[24];
     msg.VDD_IN_D = (int)values[25];
     msg.VDD_CPU_N = (int)values[26];
