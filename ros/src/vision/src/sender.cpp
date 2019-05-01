@@ -23,7 +23,6 @@ private:
   ros::Rate loop_rate;
 
   std::string topic_name;
-  std::string publisher_name;
   std::string fd;
   int fps;
   bool is_device;
@@ -31,16 +30,25 @@ private:
   bool init_status;
 
 public:
+  /*
+    @brief: fetch launch file params and initialize video capture.
+
+    Using the node handle grab the required launch file parameters
+    and create the ROS video topic to publish ROS images. After
+    creation of the ROS topic, initialize the video capture with
+    open cv selecting the device provided from getParam info.
+   */
   ImagePublisher(ros::NodeHandle & nh):
     nh(nh), it(nh)
   {
+    // Ger parameters from launch file.
     nh.getParam("topic_name", topic_name);
     nh.getParam("fd", fd);
     nh.getParam("fps", fps);
     nh.getParam("is_device", is_device);
 
-    publisher_name = "/video/" + topic_name;
-    it.advertise(publisher_name, 5);
+    // Advertise video topic.
+    it.advertise("/video/" + topic_name, 5);
 
     // TODO review device detection.
     if (is_device) {
@@ -50,16 +58,26 @@ public:
       source = cv::VideoCapture(fd);
     }
 
+
+    // Validate that the cv::VideoCapture is opened.
     if (!source.isOpened()) {
       ROS_ERROR("Failed to open device on %s", fd.c_str());
       init_status = -1;
     }
-
-    ROS_INFO("Opened camera on %s", fd.c_str());
-    loop_rate(fps);
+    else
+    {
+      ROS_INFO("Opened camera on %s", fd.c_str());
+      loop_rate(fps);
+    }
   }
 
-  void execute() {
+  /*
+    @brief: if init success, start publishing ROS images.
+
+    Publish the images to /video/<topic-name> ROS topic,
+    at a frequency of ~fps~ Hz.
+   */
+  bool execute() {
     if(init_status != 0)
       return init_status;
 
@@ -79,7 +97,7 @@ public:
       ros::spinOnce();
       loop_rate.sleep();
     }
-    return 0;
+    return init_status;
   }
 }
 
