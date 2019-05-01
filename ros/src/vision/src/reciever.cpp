@@ -3,6 +3,12 @@
 #include <opencv2/opencv.hpp>
 #include <cv_bridge/cv_bridge.h>
 
+
+/*
+  This is used to check that the images being placed into
+  the ROS topic by sender.cpp are functioning as intended.
+ */
+
 std::string name;
 
 void imageCallback(const sensor_msgs::ImageConstPtr &msg)
