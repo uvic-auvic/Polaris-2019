@@ -91,59 +91,23 @@ public:
         nh.getParam("gate_detect_count", gate_detect_count);
         nh.getParam("search_count", search_count);
 
-        if(!parse_json(forwards, forward_loc))
-        {
-            throw InvalidJSONException(forward_loc);
-        }
 
-        if(!parse_json(forwards_start, forward_strt_loc))
-        {
-            throw InvalidJSONException(forward_strt_loc);
-        }
-
-        if(!parse_json(reverse, reverse_loc))
-        {
-            throw InvalidJSONException(reverse_loc);
-        }
-
-        if(!parse_json(reverse_start, reverse_strt_loc))
-        {
-            throw InvalidJSONException(reverse_strt_loc);
-        }
-
-        if(!parse_json(stop, stop_loc))
-        {
-            throw InvalidJSONException(stop_loc);
-        }
-
-        if(!parse_json(submerge, submerge_loc))
-        {
-            throw InvalidJSONException(submerge_loc);
-        }
-
-        if(!parse_json(rise, rise_loc))
-        {
-            throw InvalidJSONException(rise_loc);
-        }
-
-        if(!parse_json(rotate_cw, rotate_cw_loc))
-        {
-            throw InvalidJSONException(rotate_cw_loc);
-        }
-
-        if(!parse_json(rotate_cw, rotate_ccw_loc))
-        {
-            throw InvalidJSONException(rotate_ccw_loc);
-        }
-
-        if(!parse_json(left, left_loc))
-        {
-            throw InvalidJSONException(left_loc);
-        }
-
-        if(!parse_json(right, right_loc))
-        {
-            throw InvalidJSONException(right_loc);
+        try {
+          parse_json(forwards, forward_loc);
+          parse_json(forwards_start, forward_strt_loc);
+          parse_json(reverse, reverse_loc);
+          parse_json(reverse_start, reverse_strt_loc);
+          parse_json(stop, stop_loc);
+          parse_json(submerge, submerge_loc);
+          parse_json(rise, rise_loc);
+          parse_json(rotate_cw, rotate_cw_loc);
+          parse_json(rotate_cw, rotate_ccw_loc);
+          parse_json(left, left_loc);
+          parse_json(right, right_loc);
+        } catch (IvalidJSONException e){
+          ROS_FATAL("AI Initialization Failure.");
+          ros::shutdown();
+          exit(1);
         }
     }
 
@@ -268,7 +232,7 @@ private:
                 if(nav_event_ordering.size() > 1)
                 {
                     ROS_ERROR("Invalid json. \"single\" cannot be inside a \"repeat\".");
-                    return false;
+                    throw InvalidJSONException(json_file_location);
                 }
                 nav_event_ordering.front().push_back(nav_event);
             }
@@ -278,8 +242,9 @@ private:
                 std::string repeat_count = it->first.substr(dash_idx + 1, it->first.size() - (dash_idx + 1)); 
                 if(repeat_count == "")
                 {
-                    ROS_ERROR("Invalid json. \"repeat_start\" must be written in the following format: \"repeat_start-x\", where x is the number of repititions");
-                    return false;
+                    ROS_ERROR("Invalid json. \"repeat_start\" must be written in the following format:"
+                              "\"repeat_start-x\", where x is the number of repititions");
+                    throw InvalidJSONException(json_file_location);
                 }
                 int count = std::stoi(repeat_count);
 
@@ -293,7 +258,7 @@ private:
                 if(nav_event_ordering.size() == 1)
                 {
                     ROS_ERROR("Invalid json. \"repeat\" must be between a \"repeat_start\" and a \"repeat_end\".");
-                    return false;
+                    throw InvalidJSONException(json_file_location);
                 }
                 nav_event_ordering.back().push_back(nav_event);
             }
@@ -302,7 +267,7 @@ private:
                 if(nav_event_ordering.size() == 1)
                 {
                     ROS_ERROR("Invalid json. \"repeat_end\" must come after a \"repeat_start\".");
-                    return false;
+                    throw InvalidJSONException(json_file_location);
                 }
 
                 // Add this request to current loop
@@ -325,12 +290,10 @@ private:
         if(nav_event_ordering.size() > 1)
         {
             ROS_ERROR("Invalid json. Unterminated loop. A \"repeat_start\" must terminate with a \"repeat_end\"");
-            return false;
+            throw InvalidJSONException(json_file_location);
         }
 
         nav_events = nav_event_ordering.front();
-
-        return true;
     }
 
 };
