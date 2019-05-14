@@ -31,14 +31,14 @@ typedef struct nav_event
 
 enum states
 {
-    dive,
-    dead_reckon_gate,
-    dead_reckon_dice,
-    gate_detect,
-    dice_detect,
-    stop,
-    search,
-    rise
+    STATE_DIVE,
+    STATE_DEAD_RECKON_GATE,
+    STATE_DEAD_RECKON_DICE, // This seems to be unused.
+    STATE_GATE_DETECT,
+    STATE_DICE_DETECT,
+    STATE_STOP,
+    STATE_SEARCH,
+    STATE_RISE
 };
 
 class autonomous_manager{
@@ -59,7 +59,7 @@ public:
             dice_detected(false),
 	    gate_detected(false),
 	    gate_passed(false),
-            fsm_state(dive),
+            fsm_state(STATE_DIVE),
             depth_ok(false)
     {
         nh.getParam("can_start", can_start);
@@ -124,7 +124,6 @@ public:
         ROS_INFO("Waiting for %d seconds before startinng...", start_delay);
         ros::Duration delay(start_delay);
         delay.sleep();
-        
     }
 
     bool start_autonomous_mode(startreq& req, startres& res) {
@@ -461,36 +460,37 @@ int main(int argc, char ** argv)
     peripherals::avg_data srv;
     srv.request.acq_rate = 30;
     srv.request.acq_count = 100;
+
     if(!nav_calib.call(srv))
     {
-	ROS_ERROR("Failed to calibrate the system.");
-	//return 1;
+      ROS_ERROR("Failed to calibrate the system.");
+      //return 1;
     }
-    
+
     int state_count = 0;
     while(ros::ok())
     {
         switch(am.fsm_state)
         {
-        case(dive):
+        case(STATE_DIVE):
             am.run_submerge();
-            am.fsm_state = stop;
+            am.fsm_state = STATE_STOP;
             break;
-        case(dead_reckon_gate):
+        case(STATE_DEAD_RECKON_GATE):
             am.run_forward();
             if(--state_count <= 0)
             {
-                am.fsm_state = gate_detect;
+                am.fsm_state = STATE_GATE_DETECT;
                 state_count = am.gate_detect_count;
                 am.scanner_en = true;
             }
             break;
-        case(gate_detect):
+        case(STATE_GATE_DETECT):
             am.scanner_en = true;
             am.run_forward();
             if(am.gate_passed)
             {
-                am.fsm_state = dice_detect;
+                am.fsm_state = STATE_DICE_DETECT;
                 state_count = am.dice_detect_count;
                 am.scanner_en = false;
                 am.run_forward();
@@ -499,7 +499,7 @@ int main(int argc, char ** argv)
             }
 	    am.gate_detected = false;
             break;
-        case(dice_detect):
+        case(STATE_DICE_DETECT):
             am.dice_en = true;
             am.run_forward();
 	    if(am.dice_detected)
@@ -513,7 +513,7 @@ int main(int argc, char ** argv)
 	    }
             if(!am.gate_detected && !am.dice_detected && --state_count <= 0)
             {
-                am.fsm_state = search;
+                am.fsm_state = STATE_SEARCH;
                 state_count = am.search_count;
                 am.dice_en = true;
                 am.scanner_en = false;
@@ -521,27 +521,27 @@ int main(int argc, char ** argv)
             am.dice_detected = false;
 	    am.gate_detected = false;
             break;
-        case(stop):
+        case(STATE_STOP):
             am.run_stop();
             if(am.depth_ok)
             {
-                am.fsm_state = dead_reckon_gate;
+                am.fsm_state = STATE_DEAD_RECKON_GATE;
                 state_count = am.dead_reckon_gate_count;
                 am.run_forward_start();
             }
             break;
-        case(search):
+        case(STATE_SEARCH):
             am.run_rotate_cw();
             if(am.dice_detected || --state_count <= 0)
             {
                 am.run_forward_start();
-                am.fsm_state = dice_detect;
+                am.fsm_state = STATE_DICE_DETECT;
                 state_count = am.dice_detect_count;
                 am.dice_en = true;
                 am.scanner_en = false;
             }
             break;
-        case(rise):
+        case(STATE_RISE):
             am.run_rise();
             break;
         }
