@@ -43,7 +43,7 @@ enum states
 
 class autonomous_manager{
 public:
-    autonomous_manager() 
+    autonomous_manager()
         :   nh(ros::NodeHandle("~")),
             rss(nh.advertiseService("start_ai", &autonomous_manager::start_autonomous_mode, this)),
             nav_req_pub(nh.advertise<navigation::nav_request>("/nav/navigation", 1)),
@@ -299,81 +299,86 @@ private:
 
 void autonomous_manager::receive_cam_offset(const vision::offset_position::ConstPtr &msg)
 {
-    if(scanner_en)
+  if(scanner_en)
+  {
+
+    if(msg->relative_offset_x == 127)
     {
-	if(msg->relative_offset_x == 127)
-	{
-	    gate_passed = true;
-	    return;
-	}
-
-	gate_detected = true;
-	
-	navigation::control_en srv;
-	srv.request.vel_x_enable = true;
-	srv.request.vel_y_enable = true;
-	srv.request.vel_z_enable = true;
-	srv.request.roll_enable = true;
-	srv.request.pitch_enable = true;
-	srv.request.yaw_enable = true;
-	if(yaw_rate_delta * msg->relative_offset_x <= 0)
-	{
-	    srv.request.yaw_enable = false;
-	}
-	control_en.call(srv);
-
-	yaw_rate_delta = ((double)msg->relative_offset_x) * yaw_delta_max / 100.0;
-
-	navigation::nav_request nav_req = last_nav_req;
-	nav_req.depth += depth_delta;
-	nav_req.forwards_velocity += forwards_delta;
-	nav_req.sideways_velocity += sideways_delta;
-	nav_req.yaw_rate += yaw_rate_delta;
-	
-	nav_req_pub.publish(nav_req);
-
-	srv.request.yaw_enable = true;
-	control_en.call(srv);
+      gate_passed = true;
+      return;
     }
+
+    gate_detected = true;
+
+    navigation::control_en srv;
+    srv.request.vel_x_enable = true;
+    srv.request.vel_y_enable = true;
+    srv.request.vel_z_enable = true;
+    srv.request.roll_enable = true;
+    srv.request.pitch_enable = true;
+    srv.request.yaw_enable = true;
+    if(yaw_rate_delta * msg->relative_offset_x <= 0)
+    {
+      srv.request.yaw_enable = false;
+    }
+
+    control_en.call(srv);
+
+    yaw_rate_delta = ((double)msg->relative_offset_x) * yaw_delta_max / 100.0;
+
+    navigation::nav_request nav_req = last_nav_req;
+    nav_req.depth += depth_delta;
+    nav_req.forwards_velocity += forwards_delta;
+    nav_req.sideways_velocity += sideways_delta;
+    nav_req.yaw_rate += yaw_rate_delta;
+
+    nav_req_pub.publish(nav_req);
+
+    srv.request.yaw_enable = true;
+    control_en.call(srv);
+  }
 }
 
 void autonomous_manager::receive_dice_offsets(const vision::dice_offsets::ConstPtr &msg)
 {
-    if(dice_en)
+  if(dice_en)
+  {
+    dice_detected = true;
+    navigation::control_en srv;
+    srv.request.vel_x_enable = true;
+    srv.request.vel_y_enable = true;
+    srv.request.vel_z_enable = true;
+    srv.request.roll_enable = true;
+    srv.request.pitch_enable = true;
+    srv.request.yaw_enable = true;
+
+    if(yaw_rate_delta * msg->max_dice_offset.x_offset <= 0)
     {
-        dice_detected = true;
-	navigation::control_en srv;
-	srv.request.vel_x_enable = true;
-	srv.request.vel_y_enable = true;
-	srv.request.vel_z_enable = true;
-	srv.request.roll_enable = true;
-	srv.request.pitch_enable = true;
-	srv.request.yaw_enable = true;
-	if(yaw_rate_delta * msg->max_dice_offset.x_offset <= 0)
-	{
-	    srv.request.yaw_enable = false;
-	}
-	if(depth_delta * msg->max_dice_offset.y_offset <= 0)
-	{
-	    srv.request.vel_z_enable = false;
-	}
-	control_en.call(srv);
-
-        yaw_rate_delta = ((double)msg->max_dice_offset.x_offset) * yaw_delta_max / 100.0;
-        depth_delta = ((double)msg->max_dice_offset.y_offset) * depth_delta_max / 100.0;
-
-	navigation::nav_request nav_req = last_nav_req;
-	nav_req.depth += depth_delta;
-	nav_req.forwards_velocity += forwards_delta;
-	nav_req.sideways_velocity += sideways_delta;
-	nav_req.yaw_rate += yaw_rate_delta;
-	
-	nav_req_pub.publish(nav_req);
-
-	srv.request.yaw_enable = true;
-	srv.request.vel_z_enable = true;
-	control_en.call(srv);
+      srv.request.yaw_enable = false;
     }
+
+    if(depth_delta * msg->max_dice_offset.y_offset <= 0)
+    {
+      srv.request.vel_z_enable = false;
+    }
+
+    control_en.call(srv);
+
+    yaw_rate_delta = ((double)msg->max_dice_offset.x_offset) * yaw_delta_max / 100.0;
+    depth_delta = ((double)msg->max_dice_offset.y_offset) * depth_delta_max / 100.0;
+
+    navigation::nav_request nav_req = last_nav_req;
+    nav_req.depth += depth_delta;
+    nav_req.forwards_velocity += forwards_delta;
+    nav_req.sideways_velocity += sideways_delta;
+    nav_req.yaw_rate += yaw_rate_delta;
+
+    nav_req_pub.publish(nav_req);
+
+    srv.request.yaw_enable = true;
+    srv.request.vel_z_enable = true;
+    control_en.call(srv);
+  }
 }
 
 void autonomous_manager::receive_depth_info(const navigation::depth_info::ConstPtr &msg)
@@ -402,11 +407,11 @@ void autonomous_manager::run_event(std::vector<nav_event_t> event_list, double d
             sideways_delta = 0;
             yaw_rate_delta = 0;
         }
-        
+
         // Get message and add deltas
         navigation::nav_request nav_req = event_list[i].nav_req;
         last_nav_req = nav_req;
-	last_nav_req.depth = depth;
+        last_nav_req.depth = depth;
         nav_req.depth = depth + depth_delta;
         nav_req.forwards_velocity += forwards_delta;
         nav_req.sideways_velocity += sideways_delta;
@@ -414,17 +419,17 @@ void autonomous_manager::run_event(std::vector<nav_event_t> event_list, double d
 
         // Publish message
         nav_req_pub.publish(nav_req);
-        
+
         if(event_list[i].time > 0)
         {
             ros::Duration d(event_list[i].time / 1000.0);
             ros::spinOnce();
             d.sleep();
         }
-	else
-	{
-	    ros::spin();
-	}
+        else
+        {
+          ros::spin();
+        }
     }
 }
 
@@ -439,18 +444,18 @@ int main(int argc, char ** argv)
     autonomous_manager am;
     ros::Publisher nav_req_pub = nh.advertise<navigation::nav_request>("/nav/navigation", 1);
     ros::ServiceClient nav_calib = nh.serviceClient<peripherals::avg_data>("/nav/CalibrateSurfaceDepth");
-    ros::Subscriber sub_front_cam_offsets = 
+    ros::Subscriber sub_front_cam_offsets =
         nh.subscribe<vision::offset_position>("/video/scanned_" + front_cam_name, 1, &autonomous_manager::receive_cam_offset, &am);
-    ros::Subscriber sub_dice_offsets = 
+    ros::Subscriber sub_dice_offsets =
         nh.subscribe<vision::dice_offsets>("/video/dice_" + front_cam_name, 1, &autonomous_manager::receive_dice_offsets, &am);
-    ros::Subscriber sub_depth = 
+    ros::Subscriber sub_depth =
         nh.subscribe<navigation::depth_info>("/nav/depth_control_info", 1, &autonomous_manager::receive_depth_info, &am);
-    
+
     am.start();
 
     if(!ros::ok())
     {
-	return 0;
+      return 0;
     }
 
     // Start doing AI things
@@ -470,83 +475,83 @@ int main(int argc, char ** argv)
     int state_count = 0;
     while(ros::ok())
     {
-        switch(am.fsm_state)
+      switch(am.fsm_state)
         {
         case(STATE_DIVE):
-            am.run_submerge();
-            am.fsm_state = STATE_STOP;
-            break;
+          am.run_submerge();
+          am.fsm_state = STATE_STOP;
+          break;
         case(STATE_DEAD_RECKON_GATE):
-            am.run_forward();
-            if(--state_count <= 0)
-            {
-                am.fsm_state = STATE_GATE_DETECT;
-                state_count = am.gate_detect_count;
-                am.scanner_en = true;
-            }
-            break;
-        case(STATE_GATE_DETECT):
+          am.run_forward();
+          if(--state_count <= 0)
+          {
+            am.fsm_state = STATE_GATE_DETECT;
+            state_count = am.gate_detect_count;
             am.scanner_en = true;
+          }
+          break;
+        case(STATE_GATE_DETECT):
+          am.scanner_en = true;
+          am.run_forward();
+          if(am.gate_passed)
+          {
+            am.fsm_state = STATE_DICE_DETECT;
+            state_count = am.dice_detect_count;
+            am.scanner_en = false;
             am.run_forward();
-            if(am.gate_passed)
-            {
-                am.fsm_state = STATE_DICE_DETECT;
-                state_count = am.dice_detect_count;
-                am.scanner_en = false;
-                am.run_forward();
-                am.dice_en = true;
-		am.scanner_en = true;
-            }
-	    am.gate_detected = false;
-            break;
-        case(STATE_DICE_DETECT):
             am.dice_en = true;
-            am.run_forward();
-	    if(am.dice_detected)
-	    {
-		am.scanner_en = false;
-		state_count = am.dice_detect_count;
-	    }
-	    else
-	    {
-		am.scanner_en = true;
-	    }
-            if(!am.gate_detected && !am.dice_detected && --state_count <= 0)
-            {
-                am.fsm_state = STATE_SEARCH;
-                state_count = am.search_count;
-                am.dice_en = true;
-                am.scanner_en = false;
-            }
-            am.dice_detected = false;
-	    am.gate_detected = false;
-            break;
+            am.scanner_en = true;
+          }
+          am.gate_detected = false;
+          break;
+        case(STATE_DICE_DETECT):
+          am.dice_en = true;
+          am.run_forward();
+          if(am.dice_detected)
+          {
+            am.scanner_en = false;
+            state_count = am.dice_detect_count;
+          }
+          else
+          {
+            am.scanner_en = true;
+          }
+          if(!am.gate_detected && !am.dice_detected && --state_count <= 0)
+          {
+            am.fsm_state = STATE_SEARCH;
+            state_count = am.search_count;
+            am.dice_en = true;
+            am.scanner_en = false;
+          }
+          am.dice_detected = false;
+          am.gate_detected = false;
+          break;
         case(STATE_STOP):
-            am.run_stop();
-            if(am.depth_ok)
+          am.run_stop();
+          if(am.depth_ok)
             {
-                am.fsm_state = STATE_DEAD_RECKON_GATE;
-                state_count = am.dead_reckon_gate_count;
-                am.run_forward_start();
+              am.fsm_state = STATE_DEAD_RECKON_GATE;
+              state_count = am.dead_reckon_gate_count;
+              am.run_forward_start();
             }
-            break;
+          break;
         case(STATE_SEARCH):
-            am.run_rotate_cw();
-            if(am.dice_detected || --state_count <= 0)
+          am.run_rotate_cw();
+          if(am.dice_detected || --state_count <= 0)
             {
-                am.run_forward_start();
-                am.fsm_state = STATE_DICE_DETECT;
-                state_count = am.dice_detect_count;
-                am.dice_en = true;
-                am.scanner_en = false;
+              am.run_forward_start();
+              am.fsm_state = STATE_DICE_DETECT;
+              state_count = am.dice_detect_count;
+              am.dice_en = true;
+              am.scanner_en = false;
             }
-            break;
+          break;
         case(STATE_RISE):
-            am.run_rise();
-            break;
+          am.run_rise();
+          break;
         }
 
-        ros::spinOnce();
+      ros::spinOnce();
     }
     return 0;
 }
