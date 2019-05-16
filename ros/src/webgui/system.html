@@ -49,6 +49,7 @@
   </script>
   <script src="js/ros_out.js" type="text/javascript" type="text/javascript"></script>
   <script src="js/topics/power_board.js" type="text/javascript" type="text/javascript"></script>
+  <script src="js/topics/onboard_sys_info.js" type="text/javascript" type="text/javascript"></script>
 
 </head>
 <body>
@@ -293,7 +294,186 @@
         </tbody>
       </table>
     </div>
-    
+    <div class="col-lg-2">
+      
+      <table class="table table-hover">
+          <thead>
+            <tr>
+              <th class="ros_topic_title"><h4>On Board System Info</h4></th>
+            </tr>
+          </thead>
+          <tbody>  
+            <tr>
+              <td >Ram Usage</td>
+              <td>
+                  <p>
+                  <span id="ram_usage"></span>
+                </p>
+                </td>
+            </tr>
+            <tr>
+              <td>CPU 1 Usage</td>
+              <td>
+                  <p>
+                  <span id="cpu_1"></span>
+                </p>
+                </td>
+            </tr>
+          <tr>
+            <td>CPU 2 Usage</td>
+            <td>
+              <p>
+              <span id="cpu_2"></span>
+            </p>
+            </td>
+          </tr>
+          <tr>
+            <td>CPU 3 Usage</td>
+            <td>
+                <p>
+                <span id="cpu_3"></span>
+              </p>
+              </td>
+          </tr>
+          <tr>
+            <td>CPU 4 Usage</td>
+            <td>
+              <p>
+              <span id="cpu_4"></span>
+            </p>
+            </td>
+          </tr>
+          <tr>
+            <td>CPU 5 Usage</td>
+            <td>
+              <p>
+              <span id="cpu_5"></span>
+            </p>
+            </td>
+          </tr>
+          <tr>
+            <td>CPU 6 Usage</td>
+            <td>
+                <p>
+                <span id="cpu_6"></span>
+              </p>
+              </td>
+          </tr>
+          <tr>
+            <td>BCPU Temperature</td>
+            <td>
+              <p>
+              <span id="bcpu_temp"></span>
+            </p>
+            </td>
+          </tr>
+          <tr>
+            <td>MCPU Temperature</td>
+            <td>
+              <p>
+              <span id="mcpu_temp"></span>
+            </p>
+            </td>
+          </tr>
+          <tr>
+            <td>GPU Temperature</td>
+            <td>
+              <p>
+              <span id="gpu_temp"></span>
+            </p>
+            </td>
+          </tr>
+          <tr>
+            <td>PLL Temperature</td>
+            <td>
+              <p>
+              <span id="pll_temp"></span>
+            </p>
+            </td>
+          </tr>
+          <tr>
+            <td>Tboard Temperature</td>
+            <td>
+              <p>
+              <span id="tboard_temp"></span>
+            </p>
+            </td>
+          </tr>
+          <tr>
+            <td>Tboard Temperature</td>
+            <td>
+              <p>
+              <span id="tdiode_temp"></span>
+            </p>
+            </td>
+          </tr>
+          <tr>
+            <td>Tboard Temperature</td>
+            <td>
+              <p>
+              <span id="thermal"></span>
+            </p>
+            </td>
+          </tr>
+          <tr>
+            <td>PMIC Temperature</td>
+            <td>
+              <p>
+              <span id="pmic_temp"></span>
+            </p>
+            </td>
+          </tr>
+          <tr>
+            <td>VDD IN</td>
+            <td>
+              <p>
+              <span id="vdd_in"></span>
+            </p>
+            </td>
+          </tr>
+          <tr>
+            <td>VDD CPU</td>
+            <td>
+              <p>
+              <span id="vdd_cpu"></span>
+            </p>
+            </td>
+          </tr>
+          <tr>
+            <td>VDD GPU</td>
+            <td>
+              <p>
+              <span id="vdd_gpu"></span>
+            </p>
+            </td>
+          </tr>
+          <tr>
+            <td>VDD SOC</td>
+            <td>
+              <p>
+              <span id="vdd_soc"></span>
+            </p>
+            </td>
+          </tr>
+          <tr>
+            <td>VDD WIFI</td>
+            <td>
+              <p>
+              <span id="vdd_wifi"></span>
+            </p>
+            </td>
+          </tr>
+          <tr>
+            <td>VDD DDR</td>
+            <td>
+              <p>
+              <span id="vdd_ddr"></span>
+            </p>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
     <div id="home_view" class="row">
       <div class="col-lg-12">
           <hr style="border-top-color:grey">
