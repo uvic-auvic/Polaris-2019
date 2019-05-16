@@ -17,42 +17,60 @@ using AvgDataRes = peripherals::avg_data::Response;
 using ControlEnReq = navigation::control_en::Request;
 using ControlEnRes = navigation::control_en::Response;
 
+
+/*!
+  \brief Responsible for management of the submarines controls.
+  This system obtains the result of controlling how the submarine
+  maintains its orientation based off information from other
+  components of the system.
+ */
 class control_system
 {
 public:
     control_system();
     ~control_system();
-    void receive_nav_request(const navigation::nav_request::ConstPtr &msg);
-    void receive_imu_data(const peripherals::imu::ConstPtr &msg);
-    void receive_powerboard_data(const peripherals::powerboard::ConstPtr &msg);
-    void compute_output_vectors(navigation::nav &msg);
-    void populate_depth_data(navigation::depth_info &msg);
-    bool calibrate_surface_depth(AvgDataReq &req, AvgDataRes &res);
-    bool control_enable_service(ControlEnReq &req, ControlEnRes &res);
+
+
+  void receive_nav_request(const navigation::nav_request::ConstPtr &msg);
+  void receive_imu_data(const peripherals::imu::ConstPtr &msg);
+  void receive_powerboard_data(const peripherals::powerboard::ConstPtr &msg);
+  void compute_output_vectors(navigation::nav &msg);
+  void populate_depth_data(navigation::depth_info &msg);
+  bool calibrate_surface_depth(AvgDataReq &req, AvgDataRes &res);
+  bool control_enable_service(ControlEnReq &req, ControlEnRes &res);
 private:
-    // ROS
-    ros::NodeHandle nh;
+  // ROS
+  ros::NodeHandle nh;
 
-    // Controllers
-    position_controller* angular_pos_p;
-    position_controller* angular_pos_r;
-    velocity_controller* angular_vel_yw;
-    velocity_controller* linear_vel_z;
+  // PID Controllers
+  position_controller* angular_pos_p;
+  position_controller* angular_pos_r;
+  velocity_controller* angular_vel_yw;
+  velocity_controller* linear_vel_z;
 
-    // Filters
-    std::unique_ptr<filter_base> depth_filter;
+  // Filters
+  std::unique_ptr<filter_base> depth_filter;
 
-    // Data
-    navigation::nav_request::ConstPtr current_request;
-    peripherals::imu::ConstPtr imu_data;
-    double current_depth;
-    double surface_pressure;
-    bool depth_calibrated;
+  // Data
+  navigation::nav_request::ConstPtr current_request;
+  peripherals::imu::ConstPtr imu_data;
+  double current_depth;
+  double surface_pressure;
+  bool depth_calibrated;
 
-    // Enables
-    ControlEnReq control_enables;
+  // Enables
+  ControlEnReq control_enables;
 };
 
+
+/*!
+  \brief Creates and enables the control system.
+  The control systems parameters are obtained from the launch file
+  and loaded into the object upon creation. PID controllers are
+  also created to control the submarines orientation and movement.
+
+  The system uses position controllers for the angular position p and r, and uses velocity controllers for the angular and linear velocity yw and z respectively.
+ */
 control_system::control_system():
     nh(ros::NodeHandle("~")),
     current_request(boost::shared_ptr<navigation::nav_request>(new navigation::nav_request())),
@@ -67,6 +85,9 @@ control_system::control_system():
     // General Control System Parameters
     double loop_rate, min_lin_vel, max_lin_vel;
     double min_angl_vel, max_angl_vel, min_angl_pos, max_angl_pos;
+
+    /*! \todo Default values for parameters that are expected to be
+      provided in the launch file in the event they're not provided. */
     nh.getParam("loop_rate", loop_rate);
     nh.getParam("min_linear_vel", min_lin_vel);
     nh.getParam("max_linear_vel", max_lin_vel);
@@ -75,7 +96,7 @@ control_system::control_system():
     nh.getParam("min_angular_pos", min_angl_pos);
     nh.getParam("max_angular_pos", max_angl_pos);
     double dt = 10.0 / loop_rate;
-    
+
     // Veloctiy Z Control System
     double Kp_vel_z, Ki_vel_z;
     nh.getParam("Kp_vel_z", Kp_vel_z);
@@ -112,26 +133,42 @@ control_system::control_system():
     depth_filter = std::unique_ptr<filter_base>(new median_filter(depth_filter_size));
 }
 
+/*!
+  \brief Destroys object and PID controllers.
+ */
 control_system::~control_system()
-{       
+{
     delete linear_vel_z;
     delete angular_pos_p;
     delete angular_pos_r;
     delete angular_vel_yw;
 }
 
+/*!
+  \brief Updates the current navigation request with the one most recently published.
+  \param msg The most recent navigation request.
+ */
 void control_system::receive_nav_request(const navigation::nav_request::ConstPtr &msg) 
-{      
+{
     current_request = msg;
 }
 
+
+/*!
+  \brief: Fetch the most recent IMU data.
+  \param msg The latest IMU data.
+ */
 void control_system::receive_imu_data(const peripherals::imu::ConstPtr &msg)
-{      
+{
     imu_data = msg;
 }
 
+/*!
+  \brief Fetch the most recent power board data.
+  \param msg The latest power board data.
+ */
 void control_system::receive_powerboard_data(const peripherals::powerboard::ConstPtr &msg)
-{      
+{
     // depth[m] = pressure[N/m^2] / (density[kg/m^3] * gravity[N/kg])
     constexpr float div = 997 * 9.81;
     //depth_filter->add_data((msg->external_pressure - surface_pressure) / div);
@@ -139,6 +176,13 @@ void control_system::receive_powerboard_data(const peripherals::powerboard::Cons
     current_depth = (msg->external_pressure - surface_pressure) / div;
 }
 
+
+/*!
+  \brief Service callback to calibrate the surface depth.
+  \param req Service request message.
+  \param res Service response message.
+  \return true upon success, false otherwise.
+ */
 bool control_system::calibrate_surface_depth(AvgDataReq &req, AvgDataRes &res)
 {
     // Copy service message over and request average external pressure
@@ -159,9 +203,14 @@ bool control_system::calibrate_surface_depth(AvgDataReq &req, AvgDataRes &res)
     depth_calibrated = true;
     return true;
 }
-    
+
+/*!
+  \brief Callback for service to enable different components of the control system.
+  \param req Service enable request.
+  \param res Response to enabled service request.
+ */
 bool control_system::control_enable_service(ControlEnReq &req, ControlEnRes &res)
-{       
+{
     this->control_enables = req;
 
     // Reset any control systems being disabled
@@ -185,8 +234,13 @@ bool control_system::control_enable_service(ControlEnReq &req, ControlEnRes &res
     return true;
 }
 
+
+/*!
+  \brief TODO
+  \param msg Navigation message that's being populated with the results.
+ */
 void control_system::compute_output_vectors(navigation::nav &msg)
-{       
+{
     if(depth_calibrated)
     {
         if(control_enables.vel_x_enable)
@@ -220,8 +274,12 @@ void control_system::compute_output_vectors(navigation::nav &msg)
     }
 }
 
+/*!
+  \brief Populates provided message with current information about the submarine depth.
+  \param msg The message in which the depth data is being placed.
+ */
 void control_system::populate_depth_data(navigation::depth_info &msg)
-{       
+{
     msg.desired_depth = current_request->depth;
     msg.current_depth = current_depth;
 }
@@ -233,7 +291,7 @@ int main(int argc, char ** argv)
 
     double loop_rate, max_lin_vel;
     nh.getParam("loop_rate", loop_rate);
-    
+
     int loops_per_param_update;
     nh.getParam("loops_per_param_update", loops_per_param_update);
 
@@ -260,7 +318,7 @@ int main(int argc, char ** argv)
 
     ros::Rate r(loop_rate);
     uint8_t count = 0;
-    while(ros::ok()) { 
+    while(ros::ok()) {
         // Get the output vectors from the control system
         navigation::nav output_vectors;
         ctrl.compute_output_vectors(output_vectors);

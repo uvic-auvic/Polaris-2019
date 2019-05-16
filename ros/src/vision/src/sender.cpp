@@ -13,10 +13,10 @@ class ImagePublisher
 {
 private:
 
-  ros::NodeHandle nh;
+  ros::NodeHandle nodeHandle;
 
-  image_transport::ImageTransport it;
-  image_transport::Publisher pub;
+  image_transport::ImageTransport imageTransport;
+  image_transport::Publisher publisher;
 
   cv::VideoCapture source;
 
@@ -38,17 +38,17 @@ public:
     creation of the ROS topic, initialize the video capture with
     open cv selecting the device provided from getParam info.
    */
-  ImagePublisher(ros::NodeHandle & nh):
-    nh(nh), it(nh)
+  ImagePublisher(ros::NodeHandle& nh):
+    nodeHandle(nh), imageTransport(nh), loop_rate(10)
   {
     // Ger parameters from launch file.
-    nh.getParam("topic_name", topic_name);
-    nh.getParam("fd", fd);
-    nh.getParam("fps", fps);
-    nh.getParam("is_device", is_device);
+    nodeHandle.getParam("topic_name", topic_name);
+    nodeHandle.getParam("fd", fd);
+    nodeHandle.getParam("fps", fps);
+    nodeHandle.getParam("is_device", is_device);
 
     // Advertise video topic.
-    it.advertise("/video/" + topic_name, 5);
+    publisher = imageTransport.advertise("/video/" + topic_name, 5);
 
     // TODO review device detection.
     if (is_device) {
@@ -67,7 +67,7 @@ public:
     else
     {
       ROS_INFO("Opened camera on %s", fd.c_str());
-      loop_rate(fps);
+      loop_rate = ros::Rate(fps);
     }
   }
 
@@ -81,7 +81,7 @@ public:
     if(init_status != 0)
       return init_status;
 
-    while(nh.ok())
+    while(nodeHandle.ok())
     {
       cv::Mat frame;
       source >> frame;
@@ -99,18 +99,18 @@ public:
     }
     return init_status;
   }
-}
+};
 
 int main (int argc, char ** argv)
 {
     ros::init(argc, argv, "image_publisher");
 
-    ImagePublisher img_pub(ros::NodeHandle("~"));
+    ros::NodeHandle nh("~");
+
+    ImagePublisher img_pub(nh);
 
     bool result;
     result = img_pub.execute();
-
-    delete img_pub;
 
     return result;
 }

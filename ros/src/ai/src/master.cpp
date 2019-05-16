@@ -20,7 +20,7 @@ using ptree = boost::property_tree::ptree;
 
 class InvalidJSONException : public std::runtime_error {
 public:
-    InvalidJSONException(const std::string &file) : std::runtime_error("Invalid JSON file detected for \"" + file + "\"") {}
+  InvalidJSONException(const std::string file) : std::runtime_error("Invalid JSON file detected for \"" + file + "\"") {}
 };
 
 typedef struct nav_event
@@ -104,7 +104,7 @@ public:
           parse_json(rotate_cw, rotate_ccw_loc);
           parse_json(left, left_loc);
           parse_json(right, right_loc);
-        } catch (IvalidJSONException e){
+        } catch (InvalidJSONException& e){
           ROS_FATAL("AI Initialization Failure.");
           ros::shutdown();
           exit(1);
