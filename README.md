@@ -15,8 +15,8 @@ Step 0 is required for windows users without Hyper-V support, as docker won't ru
 2. Use the docker_make.sh script to the submarine system.
 
 3. Run the docker environment.
-  a. Use the docker_run.sh script to start the submarine system.
-  a. Use the docker_shell.sh script to start the docker containers interactive mode (your terminal will be occupied by the docker containers terminal).
+ * Use the docker_run.sh script to start the submarine system.
+ * Use the docker_shell.sh script to start the docker containers interactive mode (your terminal will be occupied by the docker containers terminal).
 
 ### Ubuntu 16.04 (Traditional)
 
