@@ -1,27 +1,29 @@
+#include "Detector.hpp"
 #include "opencv2/objdetect.hpp"
 #include "opencv2/highgui.hpp"
 #include "opencv2/imgproc.hpp"
 #include <cmath>
 
-class detection
+class DerivedDetector : public Detector
 {
 public:
-    detection();
-    ~detection();
+    DerivedDetector(std::string cascade_name);
+    // ~DerivedDetector();
     bool update();
     bool camera_detected();
-    int getX();
-    int getY();
+    uint16_t get_x();
+    uint16_t get_y();
 
 private:
-    cv::Point find_best_point(std::vector<point_data> points);
-    void add_point(std::vector<point_data> &points, cv::Point point, int radius);
-    void remove_point(std::vector<point_data> &points);
-
     struct point_data {
         cv::Point p;
         uint8_t n;
     };
+
+    cv::Point find_best_point();
+    void add_point(cv::Point point);
+    void remove_point();
+
 
     cv::Point best_point;
     std::vector<point_data> points;
@@ -33,23 +35,21 @@ private:
     const uint16_t radius;
     const uint8_t reset_time;
     uint8_t iteration;
+};
 
-}
-
-detection::detection(int camera_name, std::string cascade_name, uint16_t r) : radius(r), reset_time(6) // TODO look into camera_name type and reset_time init
+DerivedDetector::DerivedDetector(std::string cascade_name) : radius(100), reset_time(6)
 {
-    src(camera_name);
-    if((src.isOpened()) camera_found = true;
-    else camera_found = false;
+    // if(src.isOpened()) camera_found = true;
+    // else camera_found = false;
 
-    object_cascade.load(cascade_name);
+    cascade.load(cascade_name);
     iteration = 0;
 }
 
-detection::~detection() // TODO
-{}
+// DerivedDetector::~DerivedDetector() // TODO
+// {}
 
-bool detection::update()
+bool DerivedDetector::update()
 {
     if(!camera_found) return false;
     if(!src.read(frame)) return false;
@@ -60,14 +60,14 @@ bool detection::update()
 
     // Detects objects and stores their location in locations
     std::vector<cv::Rect> locations;
-    object_cascade.detectMultiScale(frame_gray, locations, 1.1, 2, 0|cv::CASCADE_SCALE_IMAGE, cv::Size(30, 30));
+    cascade.detectMultiScale(frame_gray, locations, 1.1, 2, 0|cv::CASCADE_SCALE_IMAGE, cv::Size(30, 30));
     if(locations.empty()) return false;
 
     for(uint8_t i=0; i<locations.size(); i++)
     {
-        cv::Point curr_point(object[0].x + object[0].width/2, object[0].y + object[0].height/2);
-        add_point(points, curr_point, radius);
-        best_point = find_point(points);
+        cv::Point curr_point(locations[0].x + locations[0].width/2, locations[0].y + locations[0].height/2);
+        add_point(curr_point);
+        best_point = find_best_point();
     }
 
     iteration++;
@@ -79,17 +79,17 @@ bool detection::update()
     return true;
 }
 
-bool detection::camera_detected() { return camera_found; }
+bool DerivedDetector::camera_detected() { return camera_found; }
 
-int detection::getX() { return best_point.x; }
+uint16_t DerivedDetector::get_x() { return best_point.x; }
 
-int detection::getY() { return best_point.y; }
+uint16_t DerivedDetector::get_y() { return best_point.y; }
 
 /**
  * Iterates through points to find the point with the largest n. If n is
  * not greater than 3, the point (0,0) is returned.
  */
-cv::Point detection::find_best_point(std::vector<point_data> points)
+cv::Point DerivedDetector::find_best_point()
 {
     uint8_t max = 0;
     uint8_t max_index = 0;
@@ -111,7 +111,7 @@ cv::Point detection::find_best_point(std::vector<point_data> points)
  * If the current point is not within radius of any point in points,
  * a new index is created for it.  
  */
-void detection::add_point(std::vector<point_data> &points, cv::Point point, uint16_t radius)
+void DerivedDetector::add_point(cv::Point point)
 {
     for(int i=0; i<points.size(); i++)
     {
@@ -129,7 +129,7 @@ void detection::add_point(std::vector<point_data> &points, cv::Point point, uint
  * Iterates through points and removes one from every n in point_data.
  * If n == 0 in any point_data, remove the data from the vector points. 
  */
-void detection::remove_point(std::vector<point_data> &points)
+void DerivedDetector::remove_point()
 {
     for(int i=0; i<points.size(); i++)
     {
