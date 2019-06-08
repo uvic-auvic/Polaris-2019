@@ -4,15 +4,22 @@
 #include "opencv2/imgproc.hpp"
 #include <cmath>
 
+
+//-------------------------------------------------------------------------------------------------
+//
+// THIS IS A TEMPLATE
+//
+//-------------------------------------------------------------------------------------------------
+
 class DerivedDetector : public Detector
 {
 public:
+    DerivedDetector();
     DerivedDetector(std::string cascade_name);
     // ~DerivedDetector();
     bool update();
-    bool camera_detected();
-    uint16_t get_x();
-    uint16_t get_y();
+    uint16_t getX();
+    uint16_t getY();
 
 private:
     struct point_data {
@@ -28,7 +35,6 @@ private:
     cv::Point best_point;
     std::vector<point_data> points;
     cv::Mat frame;
-    cv::VideoCapture src;
     cv::CascadeClassifier cascade;
 
     bool camera_found;
@@ -37,11 +43,11 @@ private:
     uint8_t iteration;
 };
 
+DerivedDetector::DerivedDetector()
+{}
+
 DerivedDetector::DerivedDetector(std::string cascade_name) : radius(100), reset_time(6)
 {
-    // if(src.isOpened()) camera_found = true;
-    // else camera_found = false;
-
     cascade.load(cascade_name);
     iteration = 0;
 }
@@ -51,8 +57,7 @@ DerivedDetector::DerivedDetector(std::string cascade_name) : radius(100), reset_
 
 bool DerivedDetector::update()
 {
-    if(!camera_found) return false;
-    if(!src.read(frame)) return false;
+
 
     cv::Mat frame_gray;
     cv::cvtColor(frame, frame_gray, cv::COLOR_BGR2GRAY);
@@ -79,11 +84,9 @@ bool DerivedDetector::update()
     return true;
 }
 
-bool DerivedDetector::camera_detected() { return camera_found; }
+uint16_t DerivedDetector::getX() { return best_point.x; }
 
-uint16_t DerivedDetector::get_x() { return best_point.x; }
-
-uint16_t DerivedDetector::get_y() { return best_point.y; }
+uint16_t DerivedDetector::getY() { return best_point.y; }
 
 /**
  * Iterates through points to find the point with the largest n. If n is
