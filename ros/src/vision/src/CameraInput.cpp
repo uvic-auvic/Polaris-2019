@@ -4,7 +4,7 @@ class CameraInput
 {
 public:
     CameraInput();
-    ~CameraInput();
+    ~CameraInput() = default;
 
     bool update();
 
@@ -23,30 +23,24 @@ private:
 };
 
 CameraInput::CameraInput() : input_front(0), input_bottom(0), input_top(0)
-{
-    input_front.read(frame_front);
-    input_bottom.read(frame_bottom);
-    input_top.read(frame_top);
-}
-
-CameraInput::~CameraInput()
 {}
 
 bool CameraInput::update()
 {
     if(!input_front.read(frame_front)) {
-        // throw error
+        return false;
     }
     if(!input_bottom.read(frame_bottom)) {
-        // throw error
+        return false;
     }
     if(!input_top.read(frame_top)) {
-        // throw error
+        return false;
     }
+    return true;
 }
 
-cv::Mat CameraInput::getFrameFront() { return frame_front; }
+cv::Mat CameraInput::getFrameFront() const { return frame_front; }
 
-cv::Mat CameraInput::getFrameBottom() { return frame_bottom; }
+cv::Mat CameraInput::getFrameBottom() const{ return frame_bottom; }
 
-cv::Mat CameraInput::getFrameTop() { return frame_top; }
+cv::Mat CameraInput::getFrameTop() const { return frame_top; }
