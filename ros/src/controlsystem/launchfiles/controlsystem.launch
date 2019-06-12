@@ -1,5 +1,15 @@
 <launch>
   <node name ="controlsystem" pkg="controlsystem" type="controlsystem" required="true">
-    
+    <rosparam param="config">
+      pid_coeffs: 
+        proportional: 1
+        integral: 1
+        derivative: 0
+    </rosparam>
+    <rosparam param="states">
+      dive:
+        desired_sources: /nav/depth
+        feedback_sources: /system/depth
+    </rosparam>
   </node>
 </launch>
