@@ -66,6 +66,14 @@ public:
     }
   }
 
+  int operator()() noexcept
+  {
+    while(ros::ok())
+      {
+        int return_code = control_system(nh);
+      }
+    return return_code;
+  }
 
 };
 
@@ -74,15 +82,10 @@ int main(int argc, char **argv)
   ros::init(argc, argv);
   ros::NodeHandle nh("~");
 
-  ControlSystem control_system();
+  ControlSystem control_system(nh);
 
-  int operator()() noexcept
-  {
-    while(ros::ok())
-      {
-        int return_code = control_system(nh);
-      }
-    ros::shutdown();
-    return return_code;
-  }
+  int return_code = control_system();
+
+  ros::shutdown();
+  return return_code;
 }
