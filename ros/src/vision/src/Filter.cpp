@@ -4,7 +4,7 @@
 class Filter
 {
 public:
-    void updateFilter();
+    void updateFilter(std::vector<cv::Rect> locations);
     uint16_t getBestX() const { return x; }
     uint16_t getBestY() const { return y; }
 

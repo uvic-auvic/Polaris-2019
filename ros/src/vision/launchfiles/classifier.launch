@@ -1,6 +1,0 @@
-<launch>
-    <arg name="topic_name" default="/video/csi_cam"/>
-    <node name="classifier" pkg="vision" type="classifier.py"  required="true">
-          <param name="topic_name" value="$(arg topic_name)"/>
-    </node>
-</launch>

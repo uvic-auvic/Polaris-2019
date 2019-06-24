@@ -1,5 +1,5 @@
 #include "Detector.hpp"
-#include "Filter.cpp"
+// #include "Filter.cpp"
 #include "opencv2/objdetect.hpp"
 #include "opencv2/highgui.hpp"
 #include "opencv2/imgproc.hpp"
@@ -12,18 +12,19 @@
 //
 //-------------------------------------------------------------------------------------------------
 
-class DerivedDetector : public Detector, Filter
+class DerivedDetector : public Detector //, Filter
 {
 public:
-    DerivedDetector::DerivedDetector(std::string cascade_name);
+    DerivedDetector(CameraInput input, std::string cascade_name);
     bool update();
     // add functions as needed
 
 private:
+    CameraInput &camera_input;
     // add functions/variables as needed
 };
 
-DerivedDetector::DerivedDetector(std::string cascade_name)
+DerivedDetector::DerivedDetector(CameraInput input, std::string cascade_name) : camera_input(input)
 {
     cascade.load(cascade_name);
 }
@@ -39,8 +40,8 @@ bool DerivedDetector::update()
     cascade.detectMultiScale(frame_gray, locations, 1.1, 2, 0|cv::CASCADE_SCALE_IMAGE, cv::Size(30, 30));
     if(locations.empty()) return false;
 
-    updateFilter(locations);
-    x = getBestX();
+    //updateFilter(locations);
+    //x = getBestX();
     
     return true;
 }

@@ -1,4 +1,4 @@
-#include"opencv2/opencv.hpp"
+#include "opencv2/opencv.hpp"
 
 class CameraInput
 {
@@ -39,8 +39,8 @@ bool CameraInput::update()
     return true;
 }
 
-cv::Mat CameraInput::getFrameFront() const { return frame_front; }
+cv::Mat CameraInput::getFrameFront() { return frame_front; }
 
-cv::Mat CameraInput::getFrameBottom() const{ return frame_bottom; }
+cv::Mat CameraInput::getFrameBottom() { return frame_bottom; }
 
-cv::Mat CameraInput::getFrameTop() const { return frame_top; }
+cv::Mat CameraInput::getFrameTop() { return frame_top; }

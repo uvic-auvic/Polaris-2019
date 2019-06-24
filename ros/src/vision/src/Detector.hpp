@@ -6,11 +6,12 @@ class Detector
 public:
     virtual bool update() = 0;
 
-    // Only needs to be called by one object
-    bool updateCameraInput() { camera_input.update(); }
-
-    uint16_t getX() const { return x; }
-    uint16_t getY() const { return y; }
+    uint16_t getXF() const { return xf; }
+    uint16_t getYF() const { return yf; }
+    uint16_t getXB() const { return xb; }
+    uint16_t getYB() const { return yb; }
+    uint16_t getXT() const { return xt; }
+    uint16_t getYT() const { return yt; }
     bool objectFound() const { return object_found; }
     bool errorFound() const { return error_found; }
     std::string getError() const { return error_type; }
@@ -19,11 +20,17 @@ public:
     bool isEnabled() const { return enabled; }
 
 protected:
-    CameraInput camera_input;
+    ~Detector() = default;
 
+    //CameraInput &camera_input;
     cv::CascadeClassifier cascade;
-    uint16_t x;
-    uint16_t y;
+    
+    uint16_t xf;
+    uint16_t yf;
+    uint16_t xb;
+    uint16_t yb;
+    uint16_t xt;
+    uint16_t yt;
 
     bool object_found = false;
     bool error_found = false;
