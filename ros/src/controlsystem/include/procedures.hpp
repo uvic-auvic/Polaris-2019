@@ -7,12 +7,21 @@
   and feedback patterns that polaris must execute.
  */
 
-namespace proc {
-  class ProcedureBase {
+namespace procedures {
+  class Procedure {
   public:
+
+    // This is used to  
+    enum class ProcedureReturnCode : int {
+                                          FATAL = -2,
+                                          ERROR = -1,
+                                          CONTINUE = 0,
+                                          NEXT = 1
+    };
+
     // Initialize class members and load the movement
     // configuration.
-    ProcedureBase()
+    Procedure()
     {
     }
 
@@ -24,14 +33,13 @@ namespace proc {
     virtual int operator()();
   };
 
-  class DiveProcedure : public ProcedureBase {
+  class DiveProcedure : public Procedure {
   public:
-    DiveProcedure()
-    {
-    }
+    DiveProcedure();
 
     int operator()()
     {
+      // Monitor depth of submarine.
       return -1;
     }
   };
