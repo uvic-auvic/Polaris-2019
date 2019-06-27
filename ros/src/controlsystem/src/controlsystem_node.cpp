@@ -1,9 +1,10 @@
 #include <ros/ros.h>
+#include <boost/geometry.hpp>
 #include <XmlRpcValue.h>
 #include <string>
 #include <map>
 
-#include "procedures.h"
+#include "procedures.hpp"
 
 class State {
   // State label.
@@ -12,6 +13,7 @@ class State {
   // Direction source. (Static, vision param, hydrophone param)
 
   // Procedure to carry out while in this state.
+  procedures::Procedure procedure;
 
   // Condition to Transition States.
 
@@ -23,16 +25,34 @@ class StateMachine {
 };
 
 class ControlSystem {
+public:
+
+  using point = boost::geometry::model::point<double, 3, boost::geometry::cs::cartesian>;
+
+  struct ResultVectors {
+    // Points from the camera position to detected objects.
+    // The results are zero vectors if the detection is
+    // off or there are no results.
+    point cam_up;
+    point cam_front;
+    point cam_down;
+
+    // Hydrophone assumed direction to noise source.
+    point hydrophones;
+  };
+
 private:
   ros::NodeHandle& nh_;
 
+  struct ResultVectors result_vectors_;
   StateMachine state_machine_;
+
 
 public:
   ControlSystem(ros::NodeHandle& nh)
-    : nh_(nh)
+    : nh_(nh), result_vectors_{}
   {
-
+    
   }
 
   int operator()() noexcept
