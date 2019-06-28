@@ -6,28 +6,31 @@
 
 #include "procedures.hpp"
 
-class State {
-  // State label.
-  // Movement type.
-  // Direction mode. (Straight, vision responsive (up/down), hydrophone responsive)
-  // Direction source. (Static, vision param, hydrophone param)
 
-  // Procedure to carry out while in this state.
-  procedures::Procedure procedure;
+/*!
+  \brief This class uses procedures, to perform tasks similar to how a DFA operates.
 
-  // Condition to Transition States.
-
-  //
-};
-
+*/
 class StateMachine {
-  
+public:
+
+  // Converting control terminology to state machine terminology.
+  using symbol = procedures::Procedure::ReturnCode;
+  using state = procedures::Procedure;
+  using state_index = std::size_t;
+
+
+private:
+
+  std::array<state, 1> states;
+  std::map<std::pair<state_index, symbol>, state_index> transitions;
 };
 
 class ControlSystem {
 public:
 
   using point = boost::geometry::model::point<double, 3, boost::geometry::cs::cartesian>;
+
 
   struct ResultVectors {
     // Points from the camera position to detected objects.
@@ -44,15 +47,23 @@ public:
 private:
   ros::NodeHandle& nh_;
 
+  // The vectors stored in this struct have origin
+  // at the center of the submarine.
   struct ResultVectors result_vectors_;
   StateMachine state_machine_;
 
+  static void load_functors_(std::map<std::string, procedures::Procedure>& functor_map)
+  {
+    functor_map.insert(std::make_pair(std::string("Dive"), procedures::DiveProcedure()));
+  }
 
 public:
   ControlSystem(ros::NodeHandle& nh)
     : nh_(nh), result_vectors_{}
   {
-    
+    // Statically load functors from procedures.hpp
+    std::map<std::string, procedures::Procedure> functor_map;
+    load_functors_(functor_map);
   }
 
   int operator()() noexcept
