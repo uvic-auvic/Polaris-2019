@@ -14,6 +14,7 @@ ros/src/gscam
 # Misc things
 ros/.catkin_workspace
 ros/test.launch
+compile_commands.json
 
 # Vim Autosaves
 */*~
@@ -24,6 +25,7 @@ ros/test.launch
 
 # Emacs/Spacemacs Autosaves
 .#*
+.dir-locals.el
 
 # TensorFlow
 ros/src/vision/tensorflow
