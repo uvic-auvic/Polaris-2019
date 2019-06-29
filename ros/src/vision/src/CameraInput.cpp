@@ -1,26 +1,5 @@
-#include "opencv2/opencv.hpp"
-
-class CameraInput
-{
-public:
-    CameraInput();
-    ~CameraInput() = default;
-
-    bool update();
-
-    cv::Mat getFrameFront();
-    cv::Mat getFrameBottom();
-    cv::Mat getFrameTop();
-
-private:
-    cv::Mat frame_front;
-    cv::Mat frame_bottom;
-    cv::Mat frame_top;
-
-    cv::VideoCapture input_front;
-    cv::VideoCapture input_bottom;
-    cv::VideoCapture input_top;
-};
+#include "CameraInput.hpp"
+#include <type_traits>
 
 CameraInput::CameraInput() : input_front(0), input_bottom(0), input_top(0)
 {}
@@ -39,8 +18,8 @@ bool CameraInput::update()
     return true;
 }
 
-cv::Mat CameraInput::getFrameFront() { return frame_front; }
+const cv::Mat& CameraInput::getFrameFront() { return frame_front; }
 
-cv::Mat CameraInput::getFrameBottom() { return frame_bottom; }
+const cv::Mat& CameraInput::getFrameBottom() { return frame_bottom; }
 
-cv::Mat CameraInput::getFrameTop() { return frame_top; }
+const cv::Mat& CameraInput::getFrameTop() { return frame_top; }

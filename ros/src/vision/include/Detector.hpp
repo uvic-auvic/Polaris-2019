@@ -1,5 +1,5 @@
 #include "opencv2/opencv.hpp"
-#include "CameraInput.cpp"
+#include "CameraInput.hpp"
 
 class Detector
 {
@@ -22,7 +22,6 @@ public:
 protected:
     ~Detector() = default;
 
-    //CameraInput &camera_input;
     cv::CascadeClassifier cascade;
     
     uint16_t xf;

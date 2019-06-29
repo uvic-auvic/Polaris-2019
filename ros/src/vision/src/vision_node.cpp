@@ -1,8 +1,8 @@
 #include <ros/ros.h>
-#include "DerivedDetector.cpp"
-#include "CameraInput.cpp"
+#include "vision/gate.h"
 
-void updateMessage(monitor::jetson_data_msg &msg);
+#include "DerivedDetector.hpp"
+#include "CameraInput.hpp"
 
 int main(int argc, char **argv)
 {
@@ -18,26 +18,22 @@ int main(int argc, char **argv)
     ros::Rate r(10); // posibly change
     while(ros::ok())
     {
-        monitor::jetson_data_msg msg; // possibly move outside of while loop
+        vision::gate msg; // possibly move outside of while loop
 
         if(input.update()) {
             dd.update();
         }
 
-        updateMessage()
+        msg.x_front = dd.getXF();
+        msg.y_front = dd.getYF();
+        msg.x_bottom = dd.getXB();
+        msg.y_bottom = dd.getYB();
+        msg.x_top = dd.getXT();
+        msg.y_top = dd.getYT();
+
         pub.publish(msg);
         ros::spinOnce();
         r.sleep();
     }
     return 0;
-}
-
-void updateMessage(monitor::jetson_data_msg &msg)
-{
-    msg.x_front = dd.getXF();
-    msg.y_front = dd.getYF();
-    msg.x_bottom = dd.getXB();
-    msg.y_bottom = dd.getYB();
-    msg.x_top = dd.getXT();
-    msg.y_top = dd.getYT();
 }
