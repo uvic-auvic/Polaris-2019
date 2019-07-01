@@ -4,9 +4,6 @@
 #include "CameraInput.hpp"
 #include "DerivedDetector.hpp"
 
-#define FRONT_FOCAL 380.655738
-#define TOP_FOCAL 0
-#define BOTTOM_FOCAL 0
 
 int main(int argc, char **argv)
 {
