@@ -1,0 +1,4 @@
+<launch>
+    <node name="vision_node" pkg="vision" type="vision_node">
+    </node>
+</launch>

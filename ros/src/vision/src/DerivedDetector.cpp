@@ -8,7 +8,7 @@
 //
 //-------------------------------------------------------------------------------------------------
 
-DerivedDetector::DerivedDetector(CameraInput input, std::string cascade_name) : camera_input(input)
+DerivedDetector::DerivedDetector(CameraInput &input, std::string cascade_name) : camera_input(input)
 {
     cascade.load(cascade_name);
 }
@@ -21,10 +21,8 @@ bool DerivedDetector::update()
 
     // Detects objects and stores their location in locations
     std::vector<cv::Rect> locations;
-    cascade.detectMultiScale(frame_gray, locations, 1.1, 2, 0|cv::CASCADE_SCALE_IMAGE, cv::Size(30, 30));
+    //cascade.detectMultiScale(frame_gray, locations, 1.1, 2, 0|cv::CASCADE_SCALE_IMAGE, cv::Size(30, 30));
     if(locations.empty()) return false;
-
-    updateFilter(locations);
     
     return true;
 }

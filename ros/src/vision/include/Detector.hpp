@@ -20,20 +20,19 @@ public:
     bool isEnabled() const { return enabled; }
 
 protected:
-    ~Detector() = default;
 
     cv::CascadeClassifier cascade;
     
-    uint16_t xf;
-    uint16_t yf;
-    uint16_t xb;
-    uint16_t yb;
-    uint16_t xt;
-    uint16_t yt;
+    uint16_t xf = 0;
+    uint16_t yf = 0;
+    uint16_t xb = 0;
+    uint16_t yb = 0;
+    uint16_t xt = 0;
+    uint16_t yt = 0;
 
     bool object_found = false;
     bool error_found = false;
-    std::string error_type = nullptr;
+    std::string error_type;
     bool enabled = true;
 };
 

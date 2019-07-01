@@ -1,4 +1,0 @@
-<launch>
-    <node name="master" pkg="vision" type="master">
-    </node>
-</launch>

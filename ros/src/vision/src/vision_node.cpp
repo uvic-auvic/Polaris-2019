@@ -1,8 +1,12 @@
 #include <ros/ros.h>
 #include "vision/gate.h"
 
-#include "DerivedDetector.hpp"
 #include "CameraInput.hpp"
+#include "DerivedDetector.hpp"
+
+#define FRONT_FOCAL 380.655738
+#define TOP_FOCAL 0
+#define BOTTOM_FOCAL 0
 
 int main(int argc, char **argv)
 {
@@ -10,15 +14,14 @@ int main(int argc, char **argv)
     ros::NodeHandle nh;
 
     ros::Publisher pub = nh.advertise<vision::gate>("gate", 1);
-
+    vision::gate msg; // possibly move outside of while loop
 
     CameraInput input;
-    DerivedDetector dd(input, "cascade_name");
+    DerivedDetector dd(input, "package.xml");
 
     ros::Rate r(10); // posibly change
     while(ros::ok())
     {
-        vision::gate msg; // possibly move outside of while loop
 
         if(input.update()) {
             dd.update();
