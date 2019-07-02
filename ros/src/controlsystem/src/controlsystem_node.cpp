@@ -1,4 +1,5 @@
 #include <ros/ros.h>
+#include <ros/console.h>
 #include <boost/geometry.hpp>
 #include <XmlRpcValue.h>
 #include <string>
@@ -57,6 +58,8 @@ private:
     functor_map.insert(std::make_pair(std::string("Dive"), procedures::DiveProcedure()));
   }
 
+  ControlSystem() = delete;
+
 public:
   ControlSystem(ros::NodeHandle& nh)
     : nh_(nh), result_vectors_{}
@@ -64,14 +67,26 @@ public:
     // Statically load functors from procedures.hpp
     std::map<std::string, procedures::Procedure> functor_map;
     load_functors_(functor_map);
+
+    XmlRpc::XmlRpcValue state_list;
+    nh_.getParam("states", state_list);
+    ROS_ASSERT(state_list.getType() == XmlRpc::XmlRpcValue::TypeStruct);
+
+    for(XmlRpc::XmlRpcValue::ValueStruct::const_iterator it = state_list.begin(); it != state_list.end(); ++it)
+      {
+        ROS_INFO_STREAM("Found state " << static_cast<std::string>(it->first) << "==>" << state_list[it->first]);
+      }
+
   }
 
   int operator()() noexcept
   {
     while(ros::ok())
       {
+        ros::spinOnce();
       }
     return 0;
+
   }
 
 };
