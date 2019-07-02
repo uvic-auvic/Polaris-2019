@@ -4,7 +4,7 @@
 
 The general form of the YAML configuration file for the control systems state machine is as follows.
 
-The root tag containing the description of the state machines states is labeled $state$. Nested within
+The root tag containing the description of the state machines states is labeled 'states'. Nested within
 the root tag is a list of state lists, or actual states themselves. The reason state lists are offered
 is to provide an identification system behind the tasks.
 
@@ -40,7 +40,7 @@ states:
 
 ## Implimentation Spec
 
-The YAML file MUST have a root tag with a dictionary of all states OR state lists. To differentiate
+The YAML file MUST have a root tag 'states' which is a dictionary of either all state OR state lists. To differentiate
 between a state and a state list restrictions must be placed on what MUST be in a state, and what
 MUST NOT be in a state list. It is also to note that the root dictionary states, would be classified
 as a state list.
