@@ -74,7 +74,9 @@ public:
 
     for(XmlRpc::XmlRpcValue::ValueStruct::const_iterator it = state_list.begin(); it != state_list.end(); ++it)
       {
+        // This value is either also a list of sub-states or is a state
         ROS_INFO_STREAM("Found state " << static_cast<std::string>(it->first) << "==>" << state_list[it->first]);
+
       }
 
   }
