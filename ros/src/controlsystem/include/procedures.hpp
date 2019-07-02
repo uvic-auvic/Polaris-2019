@@ -11,7 +11,8 @@ namespace procedures {
   class Procedure {
   public:
 
-    // This is used to  
+    // This is used to communicate what the return code means
+    // to the caller.
     enum class ReturnCode : int {
       FATAL = -2,
       ERROR = -1,
@@ -28,7 +29,7 @@ namespace procedures {
  
     // Invoking base operator() will result in FATAL
     // return code.
-    virtual ProcedureReturnCode operator()() {
+    virtual ReturnCode operator()() {
 			// Sensors to measure actual
 			// Compare actual to goal.
 			// HMMM this sounds like a PID controller...
@@ -40,7 +41,7 @@ namespace procedures {
 			// Based on computation return code to tell StateMachine
 			// what the state should be doing.
 
-			return ProcedureReturnCode::FATAL;
+			return ReturnCode::FATAL;
     };
 
 		// This function is responsible for preparing
@@ -60,10 +61,10 @@ namespace procedures {
   public:
     DiveProcedure() = default;
 
-    Procedure::ProcedureReturnCode operator()()
+    Procedure::ReturnCode operator()()
     {
       // Monitor depth of submarine.
-      return Procedure::ProcedureReturnCode::FATAL;
+      return Procedure::ReturnCode::FATAL;
     }
   };
 
