@@ -2,7 +2,7 @@ states:
   dive:
     procedure: DiveProcedure
     error: done
-    next: gate
+    next: gate/locate
   surface:
     procedure: SurfaceProcedure
     error: done
@@ -15,7 +15,7 @@ states:
     traverse:
       procedure: GateTraversalProcedure
       params:
-        side: large
+        toadd: TRUE
       error: gate/locate
       next: buoy/locate
   buoy:
@@ -31,6 +31,7 @@ states:
       orient_side:
         procedure: BuoyOrientSideProcedure
         params:
+          toadd: TRUE
           side: ohgod # specify which image we're looking for here
           # possible other parameters here
         error: buoy/locate
