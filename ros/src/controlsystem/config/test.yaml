@@ -1,0 +1,12 @@
+states:
+  A:
+    procedure: XProc
+    params: Woah
+    error: A
+    next: A
+  list:
+    B:
+      procedure: YProc
+      params: Nope
+      error: A
+      next: A
