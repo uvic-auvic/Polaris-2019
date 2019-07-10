@@ -56,6 +56,12 @@ list of states lists from outermost to innermost seperated by '/', with the stat
 the last state list by a '/' (see example below). States CAN have the following fields: params.
 State are not allowed to have any of the following names: procedure, error, next, and params.
 
+### State Reserved Words
+- "procedure": This defines the c++ procedure that this state relies upon.
+- "error": This specifies the path/name of the state this state transitions to for error behaviour.
+- "next": This specifies the path/name of the state this state transitions to for normal behaviour.
+- "params": This specifies a dictionary of options for the state to be created with. (This needs to be defined.)
+
 ```yaml
 states:
   startstate:
