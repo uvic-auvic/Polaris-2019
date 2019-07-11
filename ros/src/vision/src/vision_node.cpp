@@ -24,12 +24,15 @@ int main(int argc, char **argv)
             dd.update();
         }
 
-        msg.x_front = dd.getXF();
-        msg.y_front = dd.getYF();
-        msg.x_bottom = dd.getXB();
-        msg.y_bottom = dd.getYB();
-        msg.x_top = dd.getXT();
-        msg.y_top = dd.getYT();
+        msg.x_front = dd.getXFront();
+        msg.y_front = dd.getYFront();
+        msg.z_front = dd.getZFront();
+        msg.x_bottom = dd.getXBottom();
+        msg.y_bottom = dd.getYBottom();
+        msg.z_bottom = dd.getZBottom();
+        msg.x_top = dd.getXTop();
+        msg.y_top = dd.getYTop();
+        msg.z_top = dd.getZTop();
 
         pub.publish(msg);
         ros::spinOnce();

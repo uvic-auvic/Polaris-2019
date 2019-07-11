@@ -6,39 +6,46 @@ class Detector
 public:
     virtual bool update() = 0;
 
-    uint16_t getXF() const { return xf; }
-    uint16_t getYF() const { return yf; }
-    uint16_t getZF() const { return zf; }
-    uint16_t getXB() const { return xb; }
-    uint16_t getYB() const { return yb; }
-    uint16_t getZB() const { return zb; }
-    uint16_t getXT() const { return xt; }
-    uint16_t getYT() const { return yt; }
-    uint16_t getZT() const { return zt; }
-    bool objectFound() const { return object_found; }
-    bool errorFound() const { return error_found; }
-    std::string getError() const { return error_type; }
-    void enable() { this->enabled = true; }
-    void disable() { this->enabled = false; }
-    bool isEnabled() const { return enabled; }
+    uint16_t getXFront() const { return distance_x_front; }
+    uint16_t getYFront() const { return distance_y_front; }
+    uint16_t getZFront() const { return distance_z_front; }
+    uint16_t getXBottom() const { return distance_x_bottom; }
+    uint16_t getYBottom() const { return distance_y_bottom; }
+    uint16_t getZBottom() const { return distance_z_front; }
+    uint16_t getXTop() const { return distance_x_top; }
+    uint16_t getYTop() const { return distance_y_top; }
+    uint16_t getZTop() const { return distance_z_top; }
+    // bool errorFound() const { return error_found; }
+    // std::string getError() const { return error_type; }
+    // void enable() { this->enabled = true; }
+    // void disable() { this->enabled = false; }
+    // bool isEnabled() const { return enabled; }
 
 protected:
 
     cv::CascadeClassifier cascade;
     
-    uint16_t xf = 0;
-    uint16_t yf = 0;
-    uint16_t zf = 0;
-    uint16_t xb = 0;
-    uint16_t yb = 0;
-    uint16_t zb = 0;
-    uint16_t xt = 0;
-    uint16_t yt = 0;
-    uint16_t zt = 0;
+    cv::Rect object_front;
+    cv::Rect object_bottom;
+    cv::Rect object_top;
 
-    bool object_found = false;
-    bool error_found = false;
-    std::string error_type;
-    bool enabled = true;
+    uint32_t distance_x_front = 0;
+    uint32_t distance_y_front = 0;
+    uint32_t distance_z_front = 0;
+    uint32_t distance_x_bottom = 0;
+    uint32_t distance_y_bottom = 0;
+    uint32_t distance_z_bottom = 0;
+    uint32_t distance_x_top = 0;
+    uint32_t distance_y_top = 0;
+    uint32_t distance_z_top = 0;
+
+    bool object_found_front = false;
+    bool object_found_bottom = false;
+    bool object_found_top = false;
+    // bool error_found = false;
+    // std::string error_type;
+    bool enabled_front = false;
+    bool enabled_bottom = false;
+    bool enabled_top = false;
 };
 

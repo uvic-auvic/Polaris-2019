@@ -3,20 +3,19 @@
 
 #include "opencv2/opencv.hpp"
 #include <cmath>
+#include <vector>
 
 class Filter
 {
 public:
     void updateFilter(std::vector<cv::Rect> locations);
-    uint16_t getBestX() const { return x; }
-    uint16_t getBestY() const { return y; }
+    cv::Rect getBestRect() { return rect; }
 
 private:
-    uint16_t x = 0;
-    uint16_t y = 0;
+    cv::Rect rect;
 
     struct point_data {
-        cv::Point p;
+        cv::Rect r;
         uint8_t n;
     };
 
@@ -26,7 +25,7 @@ private:
     const uint8_t reset_time = 8;
     
     void updateBestPoint();
-    void addPoint(cv::Point point);
+    void addPoint(cv::Rect point);
     void removePoint();
 };
 

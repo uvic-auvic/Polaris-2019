@@ -10,8 +10,7 @@ void Filter::updateFilter(std::vector<cv::Rect> locations)
 {
     for(uint8_t i=0; i<locations.size(); i++)
     {
-        cv::Point curr_point(locations[i].x + locations[i].width/2, locations[i].y + locations[i].height/2);
-        addPoint(curr_point);
+        addPoint(locations.at(i));
         updateBestPoint();
     }
 
@@ -39,12 +38,16 @@ void Filter::updateBestPoint()
     }
 
     if(max > 3) {
-        x = points.at(max_index).p.x;
-        y = points.at(max_index).p.y;
+        rect.x = points.at(max_index).r.x;
+        rect.y = points.at(max_index).r.y;
+        rect.width = points.at(max_index).r.width;
+        rect.height = points.at(max_index).r.height;
     } 
     else {
-        x = 0;
-        y = 0;
+        rect.x = 0;
+        rect.y = 0;
+        rect.width = 0;
+        rect.height = 0;
     }
 }
 
@@ -55,14 +58,18 @@ void Filter::updateBestPoint()
  * If the current point is not within the radius of any point in points,
  * a new index is created for it.  
  */
-void Filter::addPoint(cv::Point point)
+void Filter::addPoint(cv::Rect point)
 {
     for(uint8_t i=0; i<points.size(); i++)
     {
-        if(sqrt(pow(point.x - points.at(i).p.x, 2) + pow(point.y - points.at(i).p.y, 2)) <= radius) {
-            points.at(i).p.x = point.x;
-            points.at(i).p.y = point.y;
-            points.at(i).n = (points.at(i).n < 8) ? points.at(i).n + 1 : 8;
+        int curr_x = points.at(i).r.x + points.at(i).r.width/2;
+        int curr_y = points.at(i).r.y + points.at(i).r.height/2;
+        if(sqrt(pow((rect.x + rect.width/2) - curr_x, 2) + pow((rect.y + rect.height/2) - curr_y, 2)) <= radius) {
+            points.at(i).r.x = rect.x;
+            points.at(i).r.y = rect.y;
+            points.at(i).r.width = rect.width;
+            points.at(i).r.height = rect.height;
+            points.at(i).n = (points.at(i).n < 10) ? points.at(i).n + 1 : 10;
             return;
         }
     }

@@ -22,7 +22,10 @@ bool DerivedDetector::update()
     // Detects objects and stores their location in locations
     std::vector<cv::Rect> locations;
     //cascade.detectMultiScale(frame_gray, locations, 1.1, 2, 0|cv::CASCADE_SCALE_IMAGE, cv::Size(30, 30));
-    if(locations.empty()) return false;
+    if(!locations.empty()) {
+        
+        return true;
+    }
     
     return true;
 }
