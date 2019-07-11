@@ -35,7 +35,7 @@ namespace vision {namespace detectiion {
              **/
             int xDistance(int x, int center_x, double scale_factor)
             {
-                int x_dis = abs(x - center_x);/scale_factor;
+                int x_dis = abs(x - center_x)/scale_factor;
                 if (x - center_x < 0){
                     x_dis = -x_dis;
                 }
