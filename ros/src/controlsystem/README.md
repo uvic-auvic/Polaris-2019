@@ -84,3 +84,11 @@ states:
         # ...
         # my label is 'states/aaaa/woah/finallyastate'
 ```
+
+## Possible Future Additions
+
+An idea for possible future adaptations of the control system would be to allow the programmer and configuration
+writer with the ability to specify multiple _next_ and _error_ states, in the form of a list. This could allow
+for more specified behaviour from what actually results in the state switching. Which leads to less complicated
+procedure routines, as they can make more specific assumptions. However, this leads to the possible need for more
+procedures to be added.
