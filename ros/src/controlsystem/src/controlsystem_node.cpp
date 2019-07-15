@@ -16,7 +16,6 @@
 class StateMachine {
 public:
   // Converting control terminology to state machine terminology.
-  
   using symbol = procedures::Procedure::ReturnCode;
   using state_index = std::size_t;
 
@@ -24,7 +23,8 @@ public:
     procedures::Procedure procedure;
     std::string error;
     std::string next;
-    bool params;
+    bool has_params;
+    bool params; // TODO add support for this.
 
     std::string path;
     std::string name;
@@ -32,22 +32,24 @@ public:
 
 private:
   // List of states that the state machine consists of.
-  std::array<State, 64> states;
+  std::vector<State> states;
+  state_index start;
   // Transition table, rows are for transitions as follows
-  // 1: next, 2: error, 3: fatal
+  // 0: continue, 1: next, 2: error, 3: fatal
   /*
     This is advantageuous because transitions can be performed in constant
     time, and the size_t maps directly back to states, which means states
     can be quickly. This results in the entire transition process being as
     efficient as it can be.
    */
-  std::array<std::array<state_index, 64>, 3> transitions;
+  std::array<std::array<state_index, 64>, 4> transitions;
 
   static void load_functors_(std::map<std::string, procedures::Procedure>& functor_map)
   {
     functor_map.insert(std::make_pair(std::string("Dive"), procedures::DiveProcedure()));
   }
 
+  // Private member function used to check if a parameter.
   static bool _check_member(XmlRpc::XmlRpcValue& o, const char * m){
     if(o.hasMember(m)) {
       switch(o[m].getType()) {
@@ -79,28 +81,24 @@ private:
     return result;
   }
 
-public:
-  StateMachine() = default;
-
-  // Need to pass in list of State structs,
-  // use that to track next state to go.
-  StateMachine(const XmlRpc::XmlRpcValue state_list) {
+  void _read_states(XmlRpc::XmlRpcValue& state_list)
+  {
     // Statically load functors from procedures.hpp
-    std::map<std::string, &procedures::Procedure> functor_map;
+    std::map<std::string, procedures::Procedure> functor_map;
     load_functors_(functor_map);
 
     // Assert proper types.
     ROS_ASSERT(state_list.getType() == XmlRpc::XmlRpcValue::TypeStruct);
 
-    std::vector<State> states;
     states.reserve(64);
 
     // State list namespaces
     std::stack<std::pair<std::string,XmlRpc::XmlRpcValue>> stack;
     stack.push(std::make_pair("", state_list));
 
-    // For each element in the stack.
-    // NOTE elements are dynamically added.
+    // For each state_list, iterate over all items in that state list.
+    // If the item is a state, add it to states.
+    // If the item is a state_list, add it to the stack of things to process.
     while(stack.size() != 0) {
       std::string path = stack.top().first;
       XmlRpc::XmlRpcValue current = stack.top().second;
@@ -113,11 +111,9 @@ public:
           XmlRpc::XmlRpcValue second = it->second;
 
           ROS_ASSERT(second.getType() == XmlRpc::XmlRpcValue::TypeStruct);
-          // ROS_INFO_STREAM("Current unit {" << static_cast<std::string>(it->first) << ',' << second.toXml() << '}');
 
           // Determine if the element is a state.
           std::size_t features = 0b0000;
-
           if(_check_member(second, "procedure")) features |= 0b1000;
           if(_check_member(second, "error")) features |= 0b0100;
           if(_check_member(second, "next")) features |= 0b0010;
@@ -126,20 +122,32 @@ public:
           // Was a valid state found.
           State new_state = {};
           switch(features) {
-          case 0b1111:
-            // State with parameters
-            // For now parameters don't exist.
-          case 0b1110:
-            {
-              // State without parameters
-              ROS_INFO_STREAM("State " << static_cast<std::string>(it->first));
-              new_state.path = path + '/';
-              new_state.procedure = functor_map[static_cast<std::string>(second["procedure"])];
-              new_state.error = static_cast<std::string>(second["error"]);
-              new_state.next = static_cast<std::string>(second["next"]);
-
-              states.push_back(new_state);
+          case 0b1111: // Found state with all features, with parameters.
+            // TODO add parameter support.
+            new_state.has_params = true;
+            new_state.params = false;
+          case 0b1110: // Found state with all features, without parameters.
+            // State without parameters
+            new_state.name = static_cast<std::string>(it->first);
+            new_state.path = path;
+            try {
+              // Look-up function definition.
+              new_state.procedure = functor_map.at(static_cast<std::string>(second["procedure"]));
+            } catch (const std::out_of_range& oor) {
+              ROS_FATAL_STREAM("Invalid configuration or source. State "
+                               << new_state.path << new_state.name
+                               << " references functor "
+                               << static_cast<std::string>(second["procedure"])
+                               << " which cannot be found.");
+              ROS_FATAL_STREAM("Check spelling, if it's loaded, or if it still needs to be implimented.");
+              throw std::invalid_argument("Referencing non-existent functor.");
             }
+            new_state.error = static_cast<std::string>(second["error"]);
+            new_state.next = static_cast<std::string>(second["next"]);
+
+            // Log state was found.
+            ROS_INFO_STREAM("State [" << new_state.path << new_state.name << "]");
+            states.push_back(new_state);
             break;
           case 0b0000:
             ROS_DEBUG_STREAM("State List " << static_cast<std::string>(it->first));
@@ -153,6 +161,74 @@ public:
           }
         }
     }
+  }
+
+  void _gen_machine()
+  {
+    bool found_start = false;
+    bool found_end = false;
+    state_index end = 65;
+    for(state_index i = 0; i < states.size(); ++i)
+      {
+        // Using as a macro
+        const State& s = states[i];
+        // Need to find the start state, "dive"
+        if(s.name == "dive") {
+          if (found_start)
+            throw std::invalid_argument("State machine configuration YAML. Multiple start (dive) states found.");
+          start = i;
+          found_start = true;
+        }
+
+        // And to ensure there's an end.
+        if (s.name == "surface") {
+          if (found_end)
+            throw std::invalid_argument("State machine configuration YAML. Multiple end (surface) states found.");
+          end = i;
+          found_end = true;
+        }
+
+        // Add continue transition
+        transitions[i][0] = i;
+
+        // Also while building the transition table.
+        bool found_next = false;
+        bool found_error = false;
+        for(state_index j = 0; j < states.size(); ++j)
+          {
+            // Using as a macro
+            const State& t = states[j];
+
+            if(s.next == (t.path + t.name)) {
+              if (found_next)
+                throw std::invalid_argument("State machine configuration YAML. Multiple next transitions found.");
+              found_next = true;
+              transitions[i][1] = j;
+            } else if(s.error == (t.path + t.name)) {
+              if (found_error)
+                throw std::invalid_argument("State machine configuration YAML. Multiple error transitions found.");
+              found_error = true;
+              transitions[i][2] = j;
+            }
+          }
+      }
+    if(!found_start)
+      throw std::invalid_argument("In state machine configuration YAML, start (dive) state not defined.");
+    if(!found_end)
+      throw std::invalid_argument("In state machine configuration YAML, end (surface) state not defined.");
+
+    for(state_index i = 0; i < 64; ++i)
+      transitions[i][3] = end;
+  }
+
+public:
+  StateMachine() = default;
+
+  // Need to pass in list of State structs,
+  // use that to track next state to go.
+  StateMachine(XmlRpc::XmlRpcValue& state_list) {
+    _read_states(state_list);
+    _gen_machine();
   }
 };
 
@@ -197,6 +273,7 @@ public:
     XmlRpc::XmlRpcValue state_params;
     nh_.getParam("states", state_params);
     StateMachine sm(state_params);
+
   }
 
   int operator()() noexcept

@@ -32,13 +32,11 @@ states:
         procedure: BuoyOrientSideProcedure
         params:
           toadd: TRUE
-          side: ohgod # specify which image we're looking for here
-          # possible other parameters here
         error: buoy/locate
         next: buoy/attack
       attack:
         procedure: BuoyAttackProcedure
         params:
-          speed: 0.25 # what would be a good speed.
+          toadd: TRUE
         error: buoy/bump/orient_side
         next: buoy/bump/attack
