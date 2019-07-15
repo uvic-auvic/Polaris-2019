@@ -46,15 +46,17 @@ MUST NOT be in a state list. It is also to note that the root dictionary states,
 as a state list.
 
 State lists are dictionaries containing keys being the state names, and values being the state parameters.
+State lists MUST NOT use reserved words (listed below under 'State Reserved Words') or required state names
+(listed below under 'Required States') as their names.
 
-States are dictionaries. States MUST have the following dictionary itmes fields: 'procedure' which
+States are dictionaries. States MUST have the following dictionary item fields: 'procedure' which
 names some defined C++ function in header/procedures.hpp, error which names some defined path to a
 state in this YAML file, and next which names some defined path to a state in this YAML file.
 What is meant by 'path to state' is if a state is in the root state list it is simply labeled as it
 is named, however if a state is within a state list(s) within the root state list it's label is a
 list of states lists from outermost to innermost seperated by '/', with the state name separated from
-the last state list by a '/' (see example below). States CAN have the following fields: params.
-State are not allowed to have any of the following names: procedure, error, next, and params.
+the last state list by a '/' (see example below). States CAN have the following fields, but are NOT
+REQUIRED to: params. States MUST NOT use reserved words (listed below) as their names.
 
 ### State Reserved Words
 - "procedure": This defines the c++ procedure that this state relies upon.
