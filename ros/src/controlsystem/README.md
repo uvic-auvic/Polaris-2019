@@ -62,6 +62,12 @@ State are not allowed to have any of the following names: procedure, error, next
 - "next": This specifies the path/name of the state this state transitions to for normal behaviour.
 - "params": This specifies a dictionary of options for the state to be created with. (This needs to be defined.)
 
+### Required States
+These states cannot be part of a state list subordinate to the root state list, as this would alter their global name.
+This list is subject to change as newer and better ideas for naming and state orderings rear their ugly heads.
+- "dive": This currently represents the start state for the state machine.
+- "surface": This currently represents the end state for the state machine. (This will more than likely need to change.)
+
 ```yaml
 states:
   startstate:
