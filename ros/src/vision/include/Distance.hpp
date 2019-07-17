@@ -10,10 +10,14 @@
 class Distance
 {
 public:
-    u_int32_t getDistanceZ(cv::Rect object, double realWidth, u_int8_t camera);
-    u_int32_t getDistanceX(cv::Rect object, double realWidth, cv::Mat frame);
-    u_int32_t getDistanceY(cv::Rect object, double realHieght, cv::Mat frame);
-private:
+    uint32_t getDistanceZ(cv::Rect object, double realWidth, u_int8_t camera) {return z_distance; }
+    uint32_t getDistanceX(cv::Rect object, double realWidth, cv::Mat frame) {return x_distance; }
+    uint32_t getDistanceY(cv::Rect object, double realHieght, cv::Mat frame) {return y_distance; }
+
+protected:
+uint32_t z_distance = 0;
+uint32_t x_distance = 0;
+uint32_t y_distance = 0;
 
 };
 
