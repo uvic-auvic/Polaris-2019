@@ -8,44 +8,71 @@
 #include <stdexcept>
 
 #include "statemachine.hpp"
+#include "statussystem.hpp"
 
+/*!
+ * This class is the "Brains" of the operation.
+ * It controls state switching, aggregating sensor
+ * information, and publishing information for sub
+ * systems.
+ */
 class ControlSystem {
 public:
-
   using point = boost::geometry::model::point<double, 3, boost::geometry::cs::cartesian>;
 
-  struct ResultVectors {
-    // Points from the camera position to detected objects.
-    // The results are zero vectors if the detection is
-    // off or there are no results.
-    point cam_up;
-    point cam_front;
-    point cam_down;
-
-    // Hydrophone assumed direction to noise source.
-    // No Z?
-    point hydrophones;
+  enum struct UpdateStatus : int {
+	  OKAY = 0,
+	  MINOR_ERROR = 1,
+	  MAJOR_ERROR = 2,
+	  FATAL_ERROR = 3,
   };
 
+  /*!
+   * Converts a UpdateStatus enum to a human-readable format.
+   * @param x status to convert.
+   * @return human-readable equivalent of status.
+   */
+  static std::string to_string(const UpdateStatus x) {
+		switch (x) {
+			case UpdateStatus::OKAY:
+				return "OKAY";
+			case UpdateStatus::MINOR_ERROR:
+				return "MINOR_ERROR";
+			case UpdateStatus::MAJOR_ERROR:
+				return "MAJOR_ERROR";
+			case UpdateStatus::FATAL_ERROR:
+				return "FATAL_ERROR";
+			default:
+				return "UNDEFINED";
+		}
+	}
+
 private:
-  ros::NodeHandle& nh_;
+  ros::NodeHandle& nodeHandle_;
 
-  // The vectors stored in this struct have origin
-  // at the center of the submarine.
-  struct ResultVectors result_vectors_;
-  //StateMachine state_machine_;
+  StatusSystem statusSystem_;
 
+  StateMachine stateMachine_;
 
-  StateMachine sm_;
+  double _depth_update()
+  {
+  	return 0.0;
+  }
+
+  UpdateStatus _run_updates()
+  {
+		statusSystem_.depth = _depth_update();
+  	return UpdateStatus::OKAY;
+  }
 
 public:
 	ControlSystem() = delete;
   explicit ControlSystem(ros::NodeHandle& nh)
-    : nh_(nh), result_vectors_{}, sm_{}
+    : nodeHandle_(nh), statusSystem_{}, stateMachine_{}
   {
 
     XmlRpc::XmlRpcValue state_params;
-    nh_.getParam("states", state_params);
+    nodeHandle_.getParam("states", state_params);
     StateMachine sm(state_params);
 
   }
@@ -53,12 +80,16 @@ public:
   int operator()() noexcept
   {
   	StateMachine::StepResult step_result = StateMachine::StepResult::CONTINUE;
-    while(step_result == StateMachine::StepResult::CONTINUE)
+    UpdateStatus update_status = UpdateStatus::OKAY;
+  	while(step_result == StateMachine::StepResult::CONTINUE)
       {
-    	  step_result = sm_();
+    	  step_result = stateMachine_();
+    	  ROS_INFO_STREAM("Stepping: " << StateMachine::to_string(step_result));
+    	  update_status = _run_updates();
+    	  ROS_INFO_STREAM("Updating:" << to_string(update_status));
         ros::spinOnce();
       }
-    return static_cast<int>(step_result);
+    return static_cast<int>(step_result) + static_cast<int>(update_status);
   }
 };
 
