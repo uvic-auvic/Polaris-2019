@@ -26,13 +26,22 @@ bool StateMachine::_check_member(XmlRpc::XmlRpcValue& o, const char * m){
 std::string StateMachine::_features_to_string(const std::size_t features)
 {
   std::string result;
-  if(features & 0b1000)
-    result += "procedure" + ((features & 0b0111) == 0) ? "" : ", ";
-  if(features & 0b0100)
-    result += "error" + ((features & 0b1011) == 0) ? "" : ", ";
-  if(features & 0b0010)
-    result += "next" + ((features & 0b1101) == 0) ? "" : ", ";
-  if(features & 0b0001)
+  if (features & 0b1000u) {
+	  result += std::string("procedure");
+	  if (!(features & 0b0111u))
+	  	result += ", ";
+  }
+  if (features & 0b0100u) {
+	  result += std::string("error");
+	  if (!(features & 0b1011u))
+	  	result += ", ";
+  }
+  if (features & 0b0010u) {
+	  result += "next";
+	  if (!(features & 0b1101u))
+	  	result += ", ";
+  }
+  if (features & 0b0001u)
     result += "params";
   return result;
 }
@@ -55,7 +64,7 @@ void StateMachine::_read_states(XmlRpc::XmlRpcValue& state_list)
   // For each state_list, iterate over all items in that state list.
   // If the item is a state, add it to states.
   // If the item is a state_list, add it to the stack of things to process.
-  while(stack.size() != 0) {
+  while(!stack.empty()) {
     std::string path = stack.top().first;
     XmlRpc::XmlRpcValue current = stack.top().second;
     ROS_INFO_STREAM(path);
@@ -70,10 +79,10 @@ void StateMachine::_read_states(XmlRpc::XmlRpcValue& state_list)
 
         // Determine if the element is a state.
         std::size_t features = 0b0000;
-        if(_check_member(second, "procedure")) features |= 0b1000;
-        if(_check_member(second, "error")) features |= 0b0100;
-        if(_check_member(second, "next")) features |= 0b0010;
-        if(_check_member(second, "params")) features |= 0b0001;
+        if(_check_member(second, "procedure")) features |= 0b1000u;
+        if(_check_member(second, "error")) features |= 0b0100u;
+        if(_check_member(second, "next")) features |= 0b0010u;
+        if(_check_member(second, "params")) features |= 0b0001u;
 
         // Was a valid state found.
         StateMachine::State new_state = {};
@@ -179,7 +188,33 @@ void StateMachine::_gen_machine()
 
 // Need to pass in list of State structs,
 // use that to track next state to go.
-StateMachine::StateMachine(XmlRpc::XmlRpcValue& state_list) {
+StateMachine::StateMachine(XmlRpc::XmlRpcValue& state_list)
+: current(0), start(0), transitions{}
+{
   _read_states(state_list);
   _gen_machine();
+  this->current = this->start;
+}
+
+
+// Added to fix CLion error message.
+#define INDEX_CAST(x) static_cast<std::array<StateMachine::state_index, 64>::size_type>(x)
+
+StateMachine::StepResult StateMachine::operator()()
+{
+	// Use the result with the transition function.
+	switch(this->states[this->current].procedure())
+	{
+		case procedures::Procedure::ReturnCode::CONTINUE:
+			// Do nothing state.
+			break;
+		case procedures::Procedure::ReturnCode::NEXT:
+			this->current = this->transitions[INDEX_CAST(StateMachine::TransitionIndex::NEXT)][this->current];
+			break;
+		case procedures::Procedure::ReturnCode::ERROR:
+			this->current = this->transitions[INDEX_CAST(StateMachine::TransitionIndex::ERROR)][this->current];
+			break;
+		case procedures::Procedure::ReturnCode::FATAL:
+			this->current = this->transitions[INDEX_CAST(StateMachine::TransitionIndex::FATAL)][this->current];
+	}
 }

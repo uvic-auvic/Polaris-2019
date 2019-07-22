@@ -30,25 +30,38 @@ public:
     std::string name;
   };
 
+  enum struct TransitionIndex : int {
+  	NEXT = 0,
+  	ERROR = 1,
+  	FATAL = 2,
+  };
+
+  enum struct StepResult : int {
+  	CONTINUE = 0,
+  	EXITSUCCESS = 0,
+  	EXITFAILURE = 1,
+  };
+
 private:
   // List of states that the state machine consists of.
   std::vector<State> states;
+  state_index current;
   state_index start;
   // Transition table, rows are for transitions as follows
-  // 0: continue, 1: next, 2: error, 3: fatal
+  // 0: next, 1: error, 2: fatal
   /*
     This is advantageuous because transitions can be performed in constant
     time, and the size_t maps directly back to states, which means states
     can be quickly. This results in the entire transition process being as
     efficient as it can be.
    */
-  std::array<std::array<state_index, 64>, 4> transitions;
+  std::array<std::array<state_index, 64ul>, 3ul> transitions;
 
   static void load_functors_(std::map<std::string, procedures::Procedure>& functor_map);
 
   bool _check_member(XmlRpc::XmlRpcValue& o, const char* m);
 
-  static std::string _features_to_string(const std::size_t features);
+  static std::string _features_to_string(std::size_t features);
 
   // Used to read states from passed XmlRpcValue structure.
   void _read_states(XmlRpc::XmlRpcValue& state_list);
@@ -57,9 +70,11 @@ private:
 
 public:
   // Constructs a empty state machine.
-  StateMachine() = default;
+  StateMachine() = delete;
   // Constructs a state machine from a state description.
-  StateMachine(XmlRpc::XmlRpcValue& state_list);
+  explicit StateMachine(XmlRpc::XmlRpcValue& state_list);
+
+  StepResult operator()();
 };
 
 

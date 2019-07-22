@@ -38,11 +38,9 @@ private:
 
   StateMachine sm_;
 
-  ControlSystem() = delete;
-
-
 public:
-  ControlSystem(ros::NodeHandle& nh)
+	ControlSystem() = delete;
+  explicit ControlSystem(ros::NodeHandle& nh)
     : nh_(nh), result_vectors_{}, sm_{}
   {
 
@@ -54,11 +52,13 @@ public:
 
   int operator()() noexcept
   {
-    while(1)
+  	StateMachine::StepResult step_result = StateMachine::StepResult::CONTINUE;
+    while(step_result == StateMachine::StepResult::CONTINUE)
       {
+    	  step_result = sm_();
         ros::spinOnce();
       }
-    return 0;
+    return static_cast<int>(step_result);
   }
 };
 
