@@ -64,6 +64,10 @@ namespace procedures {
     Procedure::ReturnCode operator()()
     {
       // Monitor depth of submarine.
+
+      // Adjust depth of submarine.
+
+      // Return status.
       return Procedure::ReturnCode::FATAL;
     }
   };
