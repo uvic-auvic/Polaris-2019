@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # This script installs the full desktop suite of ROS (Robotic Operating System) on Ubuntu 14.04 based systems
 # It should be run as root in order to run uninhibited
 
