@@ -186,6 +186,9 @@ void StateMachine::_gen_machine()
     transitions[i][3] = end;
 }
 
+StateMachine::StateMachine()
+: current(0), start(0), transitions{} { ; }
+
 // Need to pass in list of State structs,
 // use that to track next state to go.
 StateMachine::StateMachine(XmlRpc::XmlRpcValue& state_list)

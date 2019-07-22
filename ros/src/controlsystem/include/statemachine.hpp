@@ -38,9 +38,25 @@ public:
 
   enum struct StepResult : int {
   	CONTINUE = 0,
-  	EXITSUCCESS = 0,
-  	EXITFAILURE = 1,
+  	EXITSUCCESS = 1,
+  	EXITFAILURE = 2,
   };
+
+  static std::string to_string(StepResult x)
+  {
+    switch(x)
+    {
+    	case StepResult::CONTINUE:
+    		return "CONTINUE";
+    	case StepResult::EXITSUCCESS:
+    	  return "EXITSUCCESS";
+    	case StepResult::EXITFAILURE:
+    		return "EXITFAILURE";
+    	default:
+    		return "UNDEFINED";
+    }
+
+  }
 
 private:
   // List of states that the state machine consists of.
@@ -70,7 +86,7 @@ private:
 
 public:
   // Constructs a empty state machine.
-  StateMachine() = delete;
+  StateMachine();
   // Constructs a state machine from a state description.
   explicit StateMachine(XmlRpc::XmlRpcValue& state_list);
 
