@@ -303,6 +303,7 @@ int main(int argc, char ** argv)
     ros::ServiceServer ctrl_en = nh.advertiseService
         ("ControlSysEnable", &control_system::control_enable_service, &ctrl);
 
+    // This is used in navigation/src/thrustmap.cpp
     ros::Publisher pub_vectors = nh.advertise<navigation::nav>("/nav/velocity_vectors", 1);
 
     ros::Publisher pub_ctrl_params = nh.advertise<navigation::depth_info>("/nav/depth_control_info", 1);

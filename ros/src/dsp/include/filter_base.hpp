@@ -4,8 +4,8 @@
 class filter_base
 {       
 public:
-    filter_base() {};
-    virtual ~filter_base() {}
+    filter_base() = default;
+    virtual ~filter_base() = default;
     virtual void add_data(double new_data) = 0;
     virtual void clear_data() = 0;
     virtual double get_result() = 0;

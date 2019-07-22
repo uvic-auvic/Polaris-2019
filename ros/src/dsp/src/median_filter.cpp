@@ -22,6 +22,6 @@ double median_filter::get_result()
     std::sort(sorted_data.begin(), sorted_data.end());
    
     // Take the middle value
-    int center = (sorted_data.size() - 1) / 2;
+    std::size_t center = (sorted_data.size() - 1) / 2;
     return sorted_data[center];
 }
