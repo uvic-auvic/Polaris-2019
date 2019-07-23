@@ -1,4 +1,7 @@
 #include "GateDetector.hpp"
+#include "Distance.hpp"
+
+#define GATE_WIDTH (12) // Update with accurate measurement 
 
 GateDetector::GateDetector()
 {
@@ -10,8 +13,13 @@ GateDetector::~GateDetector()
     
 }
 
+
+
 //Update to return Detector Result Struct
-cv::Rect GateDetector::findGate(cv::Mat frame){
+GateDetector::results GateDetector::findGate(cv::Mat frame, uint8_t camera){
+
+    
+    results result;
     cv::Rect Gate;
     cv::Mat frame_gray;
     cv::CascadeClassifier object_cascade; 
@@ -24,10 +32,15 @@ cv::Rect GateDetector::findGate(cv::Mat frame){
     object_cascade.detectMultiScale(frame_gray, object, 1.1, 2, 0|cv::CASCADE_SCALE_IMAGE, cv::Size(30, 30));
 
     //if object is found in frame
+    Distance d;
     if(!object.empty()) {
         Gate = object[0];  
+        result.distance_z = d.getDistanceZ(Gate, GATE_WIDTH, camera);
+        result.distance_x = d.getDistanceX(Gate, GATE_WIDTH, frame);
+        result.distance_y = d.getDistanceY(Gate, GATE_WIDTH, frame);
+
     }
-    return Gate;
+    return result;
 }
 
 cv::Point GateDetector::findGateDivider(cv::Mat frame){
