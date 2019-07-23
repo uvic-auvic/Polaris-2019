@@ -14,7 +14,7 @@ docker pull auvic/polaris:polaris_shell
 # Check if the container has been created
 if [ ! "$( docker container ls -a | grep polaris_interactive)" ]; then
 	printf "${YEL}Docker container ${RED}not found${YEL}, creating new container.${NC}\n"
-	docker run -a stdin -a stdout -a stderr -i -t --name polaris_interactive --mount src="$(pwd)"/..,target=/usr/polaris,type=bind --device=${VIDEO_DEVICE}:/dev/video auvic/polaris:polaris_shell
+	docker run -a stdin -a stdout -a stderr -i -t --name polaris_interactive --mount src="$(pwd)"/..,target=/var/polaris,type=bind --device=${VIDEO_DEVICE}:/dev/video auvic/polaris:polaris_shell
 else
 	printf "${YEL}Docker container ${GRN}found${YEL}.${NC}\n"
 	docker start -i -a polaris_interactive
