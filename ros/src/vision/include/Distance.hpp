@@ -15,9 +15,9 @@ public:
     uint32_t getDistanceY(cv::Rect object, double realHieght, cv::Mat frame) {return y_distance; }
 
 protected:
-uint32_t z_distance = 0;
-uint32_t x_distance = 0;
-uint32_t y_distance = 0;
+    uint32_t z_distance = 0;
+    uint32_t x_distance = 0;
+    uint32_t y_distance = 0;
 
 };
 

@@ -1,6 +1,8 @@
 #include "opencv2/opencv.hpp"
 #include "opencv2/xfeatures2d.hpp"
 #include <stdio.h>
+#include "Detector.hpp"
+#include "Distance.hpp"
 
 typedef enum 
 {
@@ -15,11 +17,11 @@ class BuoyDetector
 private:
     bool found_buoy = false;
     u_int32_t distance_x;
-    cv::VideoCapture cap;
+    CameraInput& camera_input;
     Buoy_t buoy;
     u_int8_t min_match_count = 10;
     float ratio_thresh = 0.6f; // ratio for Lowe's ratio test
-    cv::Mat frame;
+    cv::Mat frame = camera_input.getFrameFront();
     cv::Rect buoy_rect; // rectangle around buoy
     struct Detector {
         cv::Mat buoy_img;
@@ -32,36 +34,13 @@ private:
     };
     Detector detector;
 public:
-    BuoyDetector(const Buoy_t buoy_type, const cv::VideoCapture cap)
+    BuoyDetector(CameraInput& input, std::string cascade_name) : camera_input(input)
     {
-        this->cap = cap;
-        switch(buoy_type) {
-            case Jiangshi:
-                this->detector.buoy_img 
-                    = cv::imread("../images/Jiangshi_lg.png", cv::IMREAD_GRAYSCALE);
-                break;
-            case Aswang:
-                this->detector.buoy_img 
-                    = cv::imread("../images/Aswang_lg.png", cv::IMREAD_GRAYSCALE);
-                break;
-            case Draugr:
-                this->detector.buoy_img 
-                    = cv::imread("../images/Draugr_lg.png", cv::IMREAD_GRAYSCALE);
-                break;
-            case Vetalas:
-                this->detector.buoy_img 
-                    = cv::imread("../images/Vetalas_lg.png", cv::IMREAD_GRAYSCALE);
-                break;
-        }
-       this->detector.sift->detectAndCompute(this->detector.buoy_img, 
-                                            cv::noArray(),
-                                            this->detector.keypoints1, 
-                                            this->detector.descriptors1); 
-
-        
+        cascade.load(cascade_name);
     }
 
-    bool FindBuoy()
+
+    bool Update()
     {
         found_buoy = false;
         cv::Mat gray_frame;

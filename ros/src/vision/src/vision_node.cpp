@@ -2,7 +2,7 @@
 #include "vision/gate.h"
 
 #include "CameraInput.hpp"
-#include "DerivedDetector.hpp"
+#include "buoyDetector.cpp"
 
 
 int main(int argc, char **argv)
@@ -10,29 +10,29 @@ int main(int argc, char **argv)
     ros::init(argc, argv, "vision");
     ros::NodeHandle nh;
 
-    ros::Publisher pub = nh.advertise<vision::gate>("gate", 1);
-    vision::gate msg; // possibly move outside of while loop
+    ros::Publisher pub = nh.advertise<vision::gate>("buoy", 1);
+    vision::buoy msg_buoy; // possibly move outside of while loop
 
     CameraInput input;
-    DerivedDetector dd(input, "package.xml");
+    BuoyDetector buoy(input, "package.xml");
 
     ros::Rate r(10); // posibly change
     while(ros::ok())
     {
 
         if(input.update()) {
-            dd.update();
+            buoy.update();
         }
 
-        msg.x_front = dd.getXFront();
-        msg.y_front = dd.getYFront();
-        msg.z_front = dd.getZFront();
-        msg.x_bottom = dd.getXBottom();
-        msg.y_bottom = dd.getYBottom();
-        msg.z_bottom = dd.getZBottom();
-        msg.x_top = dd.getXTop();
-        msg.y_top = dd.getYTop();
-        msg.z_top = dd.getZTop();
+        msg_buoy.x_front = buoy.getXFront();
+        msg_buoy.y_front = buoy.getYFront();
+        msg_buoy.z_front = buoy.getZFront();
+        msg_buoy.x_bottom = buoy.getXBottom();
+        msg_buoy.y_bottom = buoy.getYBottom();
+        msg_buoy.z_bottom = buoy.getZBottom();
+        msg_buoy.x_top = buoy.getXTop();
+        msg_buoy.y_top = buoy.getYTop();
+        msg_buoy.z_top = buoy.getZTop();
 
         pub.publish(msg);
         ros::spinOnce();

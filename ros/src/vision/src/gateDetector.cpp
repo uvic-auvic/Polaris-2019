@@ -1,9 +1,17 @@
-#include "Detector.hpp"
 #include "GateDetector.hpp"
 
+GateDetector::GateDetector()
+{
+
+}
+
+GateDetector::~GateDetector()
+{
+    
+}
 
 //Update to return Detector Result Struct
-cv::Rect findGate(cv::Mat frame){
+cv::Rect GateDetector::findGate(cv::Mat frame){
     cv::Rect Gate;
     cv::Mat frame_gray;
     cv::CascadeClassifier object_cascade; 
@@ -22,7 +30,7 @@ cv::Rect findGate(cv::Mat frame){
     return Gate;
 }
 
-cv::Point findGateDivider(cv::Mat frame){
+cv::Point GateDetector::findGateDivider(cv::Mat frame){
     cv::Mat img1 = frame;
     cv::Mat img2 = cv::imread("img_matches/gate_divide.PNG");
 
@@ -50,7 +58,7 @@ cv::Point findGateDivider(cv::Mat frame){
     return avgPoint(feature_points);
 }
 
-cv::Point avgPoint(std::vector<cv::Point2f> list){
+cv::Point GateDetector::avgPoint(std::vector<cv::Point2f> list){
     int x = 0;
     int y = 0;
     int points = list.size();
@@ -62,7 +70,7 @@ cv::Point avgPoint(std::vector<cv::Point2f> list){
     int y_avg = y/points;
     cv::Point avg = cv::Point(x_avg,y_avg);
     return avg;
-    }
+}
 
 
 
