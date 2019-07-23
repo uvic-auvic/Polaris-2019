@@ -91,6 +91,8 @@ public:
   explicit StateMachine(XmlRpc::XmlRpcValue& state_list);
 
   StepResult operator()();
+
+  void print_debug();
 };
 
 

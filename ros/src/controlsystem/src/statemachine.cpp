@@ -221,3 +221,14 @@ StateMachine::StepResult StateMachine::operator()()
 			this->current = this->transitions[INDEX_CAST(StateMachine::TransitionIndex::FATAL)][this->current];
 	}
 }
+
+void StateMachine::print_debug()
+{
+	{
+		for(std::size_t i = 0; i != states.size(); ++i)
+		{
+			ROS_INFO_STREAM("State [" << i << "]: " << states[i].name << "< next: " << transitions[0][i] << " error: " << transitions[1][i] << " >");
+
+		}
+	}
+}

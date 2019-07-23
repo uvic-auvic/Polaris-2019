@@ -1,12 +1,10 @@
 states:
   A:
-    procedure: XProc
-    params: Woah
+    procedure: ProcedureA
     error: A
-    next: A
+    next: list/B
   list:
     B:
-      procedure: YProc
-      params: Nope
-      error: A
+      procedure: ProcedureB
+      error: list/B
       next: A

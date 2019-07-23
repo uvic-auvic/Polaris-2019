@@ -72,6 +72,36 @@ namespace procedures {
     }
   };
 
+  class ProcedureA : public Procedure {
+    ProcedureA() = default;
+
+    std::size_t iterations;
+
+    Procedure::ReturnCode operator()()
+    {
+        if(iterations == 5)
+            return Procedure::ReturnCode::NEXT;
+        ++iterations;
+        ROS_INFO_STREAM("ProcedureA");
+        return Procedure::ReturnCode::CONTINUE;
+    }
+  };
+
+	class ProcedureB : public Procedure {
+		ProcedureA() = default;
+
+		std::size_t iterations;
+
+		Procedure::ReturnCode operator()()
+		{
+			if(iterations == 5)
+				return Procedure::ReturnCode::NEXT;
+			++iterations;
+			ROS_INFO_STREAM("ProcedureA");
+			return Procedure::ReturnCode::CONTINUE;
+		}
+	};
+
 }
 
 #endif

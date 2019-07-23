@@ -1,5 +1,5 @@
 <launch>
   <node name ="controlsystem" pkg="controlsystem" type="controlsystem_node" required="true" output="screen">
-    <rosparam command="load" file="$(find controlsystem)/config/statemachine.yaml"/>
+    <rosparam command="load" file="$(find controlsystem)/config/test.yaml"/>
   </node>
 </launch>

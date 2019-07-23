@@ -75,19 +75,22 @@ public:
     nodeHandle_.getParam("states", state_params);
     StateMachine sm(state_params);
 
+    sm.print_debug();
   }
 
   int operator()() noexcept
   {
   	StateMachine::StepResult step_result = StateMachine::StepResult::CONTINUE;
     UpdateStatus update_status = UpdateStatus::OKAY;
-  	while(step_result == StateMachine::StepResult::CONTINUE)
+  	ros::Rate r(2);
+    while(step_result == StateMachine::StepResult::CONTINUE)
       {
     	  step_result = stateMachine_();
     	  ROS_INFO_STREAM("Stepping: " << StateMachine::to_string(step_result));
     	  update_status = _run_updates();
     	  ROS_INFO_STREAM("Updating:" << to_string(update_status));
         ros::spinOnce();
+        r.sleep();
       }
     return static_cast<int>(step_result) + static_cast<int>(update_status);
   }
