@@ -15,12 +15,9 @@ public:
     fir_filter(double* filter_coefficients, uint8_t filter_length);
     explicit fir_filter(const std::string& csv_filename);
 
-    @Override
-    void add_data(double new_data);
-    @Override
-    void clear_data();
-    @Override
-    double get_result();
+    void add_data(double new_data) override;
+    void clear_data() override;
+    double get_result() override;
 private:
     std::vector<double> filter_coefficients;
     std::deque<double> data;
