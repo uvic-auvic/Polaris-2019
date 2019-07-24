@@ -73,9 +73,9 @@ public:
 
     XmlRpc::XmlRpcValue state_params;
     nodeHandle_.getParam("states", state_params);
-    StateMachine sm(state_params);
+    stateMachine_ = StateMachine(state_params);
 
-    sm.print_debug();
+    stateMachine_.print_debug();
   }
 
   int operator()() noexcept
