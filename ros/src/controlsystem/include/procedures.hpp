@@ -24,6 +24,12 @@ namespace procedures {
     // configuration.
     Procedure() = default;
 
+    // Member for making copies of functors.
+    virtual Procedure* clone() const
+	  {
+		  return new Procedure(*this);
+	  }
+
 		// Functors require access to sensors.
 		// And mechanism to control submarine.   
  
@@ -44,16 +50,15 @@ namespace procedures {
 			return ReturnCode::FATAL;
     };
 
+
 		// This function is responsible for preparing
     // the sub and functor for use.
 		virtual void prep() {
-			return;
 		}
 
 		// This function is repsonsible for unpreparing
     // the sub and functor for use.
 		virtual void unprep() {
-			return;
 		}
   };
 
@@ -61,43 +66,60 @@ namespace procedures {
   public:
     DiveProcedure() = default;
 
-    Procedure::ReturnCode operator()()
+    DiveProcedure* clone() const override
+    {
+    	return new DiveProcedure(*this);
+    }
+
+    Procedure::ReturnCode operator()() override
     {
       // Monitor depth of submarine.
 
       // Adjust depth of submarine.
 
       // Return status.
-      return Procedure::ReturnCode::FATAL;
+      return Procedure::ReturnCode::CONTINUE;
     }
   };
 
   class ProcedureA : public Procedure {
-    ProcedureA() = default;
+	  std::size_t iterations;
 
-    std::size_t iterations;
+  public:
+	  ProcedureA() = default;
 
-    Procedure::ReturnCode operator()()
-    {
-        if(iterations == 5)
-            return Procedure::ReturnCode::NEXT;
-        ++iterations;
-        ROS_INFO_STREAM("ProcedureA");
-        return Procedure::ReturnCode::CONTINUE;
-    }
+    ProcedureA* clone() const override
+	  {
+		  return new ProcedureA(*this);
+	  }
+
+	  Procedure::ReturnCode operator()() override
+	  {
+		  if(iterations == 5)
+			  return Procedure::ReturnCode::NEXT;
+		  ++iterations;
+		  ROS_INFO_STREAM("ProcedureA");
+		  return Procedure::ReturnCode::CONTINUE;
+	  }
   };
 
 	class ProcedureB : public Procedure {
-		ProcedureA() = default;
-
 		std::size_t iterations;
 
-		Procedure::ReturnCode operator()()
+	public:
+		ProcedureB() = default;
+
+		ProcedureB* clone() const override
+		{
+			return new ProcedureB(*this);
+		}
+
+		Procedure::ReturnCode operator()() override
 		{
 			if(iterations == 5)
 				return Procedure::ReturnCode::NEXT;
 			++iterations;
-			ROS_INFO_STREAM("ProcedureA");
+			ROS_INFO_STREAM("ProcedureB");
 			return Procedure::ReturnCode::CONTINUE;
 		}
 	};

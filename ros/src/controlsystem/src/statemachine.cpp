@@ -1,8 +1,15 @@
 #include "statemachine.hpp"
 
-void StateMachine::load_functors_(std::map<std::string, procedures::Procedure>& functor_map)
+#include <memory>
+
+// This macro is used to allocate memory for each functor that's managed by a unique smart pointer.
+// These objects are copied later.
+#define FUNC_INSERT(x,y) functor_map.insert(std::make_pair<std::string, std::unique_ptr<procedures::Procedure>>((x), std::unique_ptr<procedures::Procedure>(new (y))))
+void StateMachine::load_functors_(StateMachine::functormap_type& functor_map)
 {
-  functor_map.insert(std::make_pair(std::string("Dive"), procedures::DiveProcedure()));
+	FUNC_INSERT("DiveProcedure", procedures::DiveProcedure());
+	FUNC_INSERT("ProcedureA", procedures::ProcedureA());
+	FUNC_INSERT("ProcedureB", procedures::ProcedureB());
 }
 
   // Private member function used to check if a parameter.
@@ -49,7 +56,7 @@ std::string StateMachine::_features_to_string(const std::size_t features)
 void StateMachine::_read_states(XmlRpc::XmlRpcValue& state_list)
 {
   // Statically load functors from procedures.hpp
-  std::map<std::string, procedures::Procedure> functor_map;
+  StateMachine::functormap_type functor_map;
   StateMachine::load_functors_(functor_map);
 
   // Assert proper types.
@@ -97,7 +104,8 @@ void StateMachine::_read_states(XmlRpc::XmlRpcValue& state_list)
           new_state.path = path;
           try {
             // Look-up function definition.
-            new_state.procedure = functor_map.at(static_cast<std::string>(second["procedure"]));
+//            new_state.procedure = std::unique_ptr<procedures::Procedure>(*functor_map.at(static_cast<std::string>(second["procedure"]))));
+						new_state.procedure = std::unique_ptr<procedures::Procedure>((*functor_map.at(static_cast<std::string>(second["procedure"]))).clone());
           } catch (const std::out_of_range& oor) {
             ROS_FATAL_STREAM("Invalid configuration or source. State "
                              << new_state.path << new_state.name
@@ -112,7 +120,7 @@ void StateMachine::_read_states(XmlRpc::XmlRpcValue& state_list)
 
           // Log state was found.
           ROS_INFO_STREAM("State [" << new_state.path << new_state.name << "]");
-          states.push_back(new_state);
+          states.push_back(std::move(new_state));
           break;
         case 0b0000:
           ROS_DEBUG_STREAM("State List " << static_cast<std::string>(it->first));
@@ -145,6 +153,8 @@ void StateMachine::_gen_machine()
         found_start = true;
       }
 
+      ROS_INFO_STREAM(s.path << s.name);
+
       // And to ensure there's an end.
       if (s.name == "surface") {
         if (found_end)
@@ -152,9 +162,6 @@ void StateMachine::_gen_machine()
         end = i;
         found_end = true;
       }
-
-      // Add continue transition
-      transitions[i][0] = i;
 
       // Also while building the transition table.
       bool found_next = false;
@@ -168,12 +175,13 @@ void StateMachine::_gen_machine()
             if (found_next)
               throw std::invalid_argument("State machine configuration YAML. Multiple next transitions found.");
             found_next = true;
-            transitions[i][1] = j;
-          } else if(s.error == (t.path + t.name)) {
+            transitions[0][i] = j;
+          }
+          if(s.error == (t.path + t.name)) {
             if (found_error)
               throw std::invalid_argument("State machine configuration YAML. Multiple error transitions found.");
             found_error = true;
-            transitions[i][2] = j;
+            transitions[1][i] = j;
           }
         }
     }
@@ -182,12 +190,13 @@ void StateMachine::_gen_machine()
   if(!found_end)
     throw std::invalid_argument("In state machine configuration YAML, end (surface) state not defined.");
 
+  // Set all transitions for fatal error to end state.
   for(state_index i = 0; i < 64; ++i)
-    transitions[i][3] = end;
+    transitions[2][i] = end;
 }
 
 StateMachine::StateMachine()
-: current(0), start(0), transitions{} { ; }
+: current(0), start(0), transitions{} {}
 
 // Need to pass in list of State structs,
 // use that to track next state to go.
@@ -199,14 +208,14 @@ StateMachine::StateMachine(XmlRpc::XmlRpcValue& state_list)
   this->current = this->start;
 }
 
-
 // Added to fix CLion error message.
 #define INDEX_CAST(x) static_cast<std::array<StateMachine::state_index, 64>::size_type>(x)
 
 StateMachine::StepResult StateMachine::operator()()
 {
+	ROS_INFO_STREAM("Current state" << this->states[this->current].name);
 	// Use the result with the transition function.
-	switch(this->states[this->current].procedure())
+	switch((*this->states[this->current].procedure)())
 	{
 		case procedures::Procedure::ReturnCode::CONTINUE:
 			// Do nothing state.
@@ -217,9 +226,14 @@ StateMachine::StepResult StateMachine::operator()()
 		case procedures::Procedure::ReturnCode::ERROR:
 			this->current = this->transitions[INDEX_CAST(StateMachine::TransitionIndex::ERROR)][this->current];
 			break;
+		default:
+			ROS_FATAL_STREAM("Cannot identify state to transition to." << this->states[this->current].name);
 		case procedures::Procedure::ReturnCode::FATAL:
 			this->current = this->transitions[INDEX_CAST(StateMachine::TransitionIndex::FATAL)][this->current];
+			ROS_INFO_STREAM("failure");
+			return StateMachine::StepResult::EXITFAILURE;
 	}
+	return StateMachine::StepResult::CONTINUE;
 }
 
 void StateMachine::print_debug()
@@ -228,7 +242,6 @@ void StateMachine::print_debug()
 		for(std::size_t i = 0; i != states.size(); ++i)
 		{
 			ROS_INFO_STREAM("State [" << i << "]: " << states[i].name << "< next: " << transitions[0][i] << " error: " << transitions[1][i] << " >");
-
 		}
 	}
 }

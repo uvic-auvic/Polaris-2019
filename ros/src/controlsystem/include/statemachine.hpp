@@ -20,7 +20,7 @@ public:
 
   // Member for verbosely describing states.
   struct State {
-    procedures::Procedure procedure;
+    std::unique_ptr<procedures::Procedure> procedure;
     std::string error;
     std::string next;
     bool has_params;
@@ -28,6 +28,9 @@ public:
 
     std::string path;
     std::string name;
+
+    State(State&&) = default;
+    State& operator=(State&&) = default;
   };
 
   enum struct TransitionIndex : int {
@@ -59,6 +62,8 @@ public:
   }
 
 private:
+	using functormap_type = std::map<std::string, std::unique_ptr<procedures::Procedure>>;
+
   // List of states that the state machine consists of.
   std::vector<State> states;
   state_index current;
@@ -73,7 +78,7 @@ private:
    */
   std::array<std::array<state_index, 64ul>, 3ul> transitions;
 
-  static void load_functors_(std::map<std::string, procedures::Procedure>& functor_map);
+  static void load_functors_(functormap_type& functor_map);
 
   bool _check_member(XmlRpc::XmlRpcValue& o, const char* m);
 
