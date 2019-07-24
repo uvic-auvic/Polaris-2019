@@ -4,7 +4,7 @@
 
 // This macro is used to allocate memory for each functor that's managed by a unique smart pointer.
 // These objects are copied later.
-#define FUNC_INSERT(x,y) functor_map.insert(std::make_pair<std::string, std::unique_ptr<procedures::Procedure>>((x), std::unique_ptr<procedures::Procedure>(new (y))))
+#define FUNC_INSERT(x,y) functor_map.insert(std::make_pair<std::string, std::unique_ptr<procedures::Procedure>>((x), std::unique_ptr<procedures::Procedure>((new y))))
 void StateMachine::load_functors_(StateMachine::functormap_type& functor_map)
 {
 	FUNC_INSERT("DiveProcedure", procedures::DiveProcedure());
