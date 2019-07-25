@@ -2,9 +2,11 @@
 
 #include "opencv2/opencv.hpp"
 #include "opencv2/xfeatures2d.hpp"
+#include "Detector.hpp"
+#include "Distance.hpp"
 
 
-class BuoyDetector
+class BuoyDetector : public Detector, Distance
 {
 private:
     typedef enum
@@ -16,7 +18,7 @@ private:
     } Buoy_t;
     bool found_buoy = false;
     u_int32_t distance_x;
-    cv::VideoCapture cap;
+    CameraInput& camera_input;
     Buoy_t buoy;
     u_int8_t min_match_count = 10;
     float ratio_thresh = 0.6f; // ratio for Lowe's ratio test
@@ -32,9 +34,8 @@ private:
     Detector detector;
 
 public:
-    BuoyDetector(const Buoy_t, const cv::VideoCapture);
+    BuoyDetector(CameraInput& input, std::string cascade_name);
     ~BuoyDetector();
-    bool FindBuoy();
+    bool Update();
     cv::Rect GetRect();
-    void Demo();
 };
