@@ -169,7 +169,7 @@ int main(int argc, char **argv)
     ros::NodeHandle nh("~");
     thrust_controller tc("motor_controller");
     ros::Subscriber joy = nh.subscribe<navigation::nav>
-        ("/nav/velocity_vectors", 1, &thrust_controller::generate_thrust_val, &tc);
+        ("/navigation/heading", 1, &thrust_controller::generate_thrust_val, &tc);
     
     ros::spin();
 
