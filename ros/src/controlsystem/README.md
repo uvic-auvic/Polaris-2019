@@ -92,3 +92,45 @@ writer with the ability to specify multiple _next_ and _error_ states, in the fo
 for more specified behaviour from what actually results in the state switching. Which leads to less complicated
 procedure routines, as they can make more specific assumptions. However, this leads to the possible need for more
 procedures to be added.
+
+# Procedures
+
+```c++
+class DerivedProcedure : public Procedure {
+    DerivedProcedure()
+    {
+        // Possible default configuration.
+    }
+
+    // This function should be implimented this way or
+    // weird things will happen.
+    DerivedProcedure* clone() const override
+    {
+        return new DerivedProcedure(*this);
+    }
+
+    /*!
+     * Provide a description of what the params are and do
+     * @params:
+     *  - param_name: description
+     */
+    virtual DerivedProcedure& operator=(XmlRpcValue& params)
+    {
+    
+    }
+
+    /*!
+     * Provide a meaningful description of what the derived procedure does.
+     * @dependencies: list all the information this functor needs to work.
+     */
+    Procedure::ReturnCode operator()() override
+    {
+        // Measure something
+
+        // Do something from what was measured.
+
+        // Tell the program what to do next.
+        return Procedure::ReturnCode::CONTINUE;
+    }
+};
+```
