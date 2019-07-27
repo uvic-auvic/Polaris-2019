@@ -3,6 +3,7 @@
 #include "vision/vector.h"
 #include "vision/change_detection.h"
 
+#include "EnableDetector.hpp"
 #include "CameraInput.hpp"
 #include "BuoyDetector.hpp"
 
@@ -10,13 +11,6 @@
 
 class VisionSystem
 {
-public:
-    enum class EnabledDetector : int {
-        NONE = 0,
-        GATE = 1,
-        BUOY = 2,
-    };
-
 private:
     // Ros fun stuff
     ros::NodeHandle nh_;
@@ -50,7 +44,7 @@ public:
     VisionSystem(ros::NodeHandle& nh) : 
         nh_(nh), 
         cameraInput_(),
-        buoyDetector_(cameraInput_, "package.xml"),
+        buoyDetector_(cameraInput_, ""),
         enabledDetectors_(EnabledDetector::NONE)
     {
         pub_ = nh.advertise<vision::vector>("/vision/vector", 1);
@@ -65,26 +59,25 @@ public:
         ros::Rate r(10); // Maybe Faster
         while(ros::ok() && !status)
         {
+            cameraInput_.update();
+
             switch (enabledDetectors_)
             {
-            case EnabledDetector::GATE:
+            case EnabledDetector::BUOY:
                 // Use the gate detector class.
-                buoyDetector_.update();
+                // buoyDetector_.update(); // not currently working
+                msg_.x_front = buoyDetector_.getXFront();
+                msg_.y_front = buoyDetector_.getYFront();
+                msg_.z_front = buoyDetector_.getZFront();
                 break;
             case EnabledDetector::NONE:
-                break;
             default:
+                msg_.x_front = 0;
+                msg_.y_front = 0;
+                msg_.z_front = 0;
                 break;
             }
 
-            if (cameraInput_.update())
-            {
-                buoyDetector_.update();
-            }
-
-            msg_.x_front = buoyDetector_.getXFront();
-            msg_.y_front = buoyDetector_.getYFront();
-            msg_.z_front = buoyDetector_.getZFront();
 
             pub_.publish(msg_);
             ros::spinOnce();

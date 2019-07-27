@@ -25,8 +25,8 @@ private:
     cv::Mat frame_top;
 
     cv::VideoCapture input_front;
-    cv::VideoCapture input_bottom;
-    cv::VideoCapture input_top;
+    // cv::VideoCapture input_bottom;
+    // cv::VideoCapture input_top;
 };
 
 #endif

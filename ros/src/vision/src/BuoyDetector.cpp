@@ -7,7 +7,7 @@
 
 BuoyDetector::BuoyDetector(CameraInput& input, std::string cascade_name) : camera_input(input)
 {
-    cascade.load(cascade_name);
+    if(cascade_name != "") cascade.load(cascade_name);
 }
 
 BuoyDetector::~BuoyDetector(){}
@@ -57,7 +57,7 @@ bool BuoyDetector::update()
             cv::Rect rect(scene_corners[0], scene_corners[2]);
             buoy_rect = rect;
             found_buoy = true;
-            
+
             distance_x_front = Distance::getDistanceX(buoy_rect, buoy_width, camera_input.getFrameFront());
             distance_y_front = Distance::getDistanceY(buoy_rect, buoy_height, camera_input.getFrameFront());
             distance_z_front = Distance::getDistanceZ(buoy_rect, buoy_width, 1);
