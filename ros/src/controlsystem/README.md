@@ -95,6 +95,8 @@ procedures to be added.
 
 # Procedures
 
+## Creating a Procedure
+
 ```c++
 class DerivedProcedure : public Procedure {
     DerivedProcedure()
@@ -133,4 +135,26 @@ class DerivedProcedure : public Procedure {
         return Procedure::ReturnCode::CONTINUE;
     }
 };
+```
+
+## Interfacing with the AUV
+
+
+### Computer Vision
+The vector result from detection can be found with the `/vision/vector` topic. And what the detection system is looking for can be changed through the service `/vision/change_direction`. It is to note that the service takes in a 8-bit unsigned integer, it is recommended to use the enum class in the vision package's include `EnabledDetector.hpp`
+```
+ros::Subscriber @ /vision/vector (result of detection)
+ros::ServiceClient @ /vision/change_detection
+```
+
+### Movement Related Functions
+```
+ros::Subscriber @ /navigation/heading
+ros::Subscriber @ /navigation/depth
+ros::serviceClient @ /navigation/set_heading
+ros::serviceClient @ /navigation/full_stop
+
+// For acquiring other infromation about the AUV query the
+// other availale topics.
+
 ```
