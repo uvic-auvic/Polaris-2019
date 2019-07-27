@@ -12,11 +12,20 @@ ros/src/gscam
 *.pyc
 
 # Misc things
-*/*~
 ros/.catkin_workspace
-.vscode
 ros/test.launch
+compile_commands.json
+
+# Vim Autosaves
+*/*~
+
+# VSCode Files
+.vscode
 **/.vsocde
+
+# Emacs/Spacemacs Autosaves
+.#*
+.dir-locals.el
 
 # TensorFlow
 ros/src/vision/tensorflow

@@ -10,12 +10,14 @@
 
 class fir_filter : public filter_base {
 public:
-    fir_filter(std::vector<double> filter_coefficients);
+		fir_filter() = default;
+    explicit fir_filter(const std::vector<double>& filter_coefficients);
     fir_filter(double* filter_coefficients, uint8_t filter_length);
-    fir_filter(std::string csv_filename);
-    void add_data(double new_data);
-    void clear_data();
-    double get_result();
+    explicit fir_filter(const std::string& csv_filename);
+
+    void add_data(double new_data) override;
+    void clear_data() override;
+    double get_result() override;
 private:
     std::vector<double> filter_coefficients;
     std::deque<double> data;
