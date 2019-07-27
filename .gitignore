@@ -17,6 +17,7 @@ ros/.catkin_workspace
 .vscode
 ros/test.launch
 **/.vsocde
+.idea/
 
 # TensorFlow
 ros/src/vision/tensorflow
