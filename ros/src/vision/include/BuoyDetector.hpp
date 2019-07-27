@@ -22,6 +22,8 @@ private:
     Buoy_t buoy;
     u_int8_t min_match_count = 10;
     float ratio_thresh = 0.6f; // ratio for Lowe's ratio test
+    float buoy_width = 60.96f; 
+    float buoy_height = 123.19f;
     cv::Rect buoy_rect; // rectangle around buoy
     
     struct Detector {

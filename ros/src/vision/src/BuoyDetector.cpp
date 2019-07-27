@@ -57,6 +57,9 @@ bool BuoyDetector::Update()
             cv::Rect rect(scene_corners[0], scene_corners[2]);
             buoy_rect = rect;
             found_buoy = true;
+            distance_x_front = getDistanceX(buoy_rect, buoy_width, camera_input.getFrameFront);
+            distance_y_front = getDistanceY(buoy_rect, buoy_height, camera_input.getFrameFront);
+            distance_z_front = getDistanceZ(buoy_rect, buoy_width, 1);
         }
     }
     return found_buoy;
