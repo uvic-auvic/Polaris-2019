@@ -27,7 +27,7 @@ find_package(catkin REQUIRED COMPONENTS
 
 add_message_files(
   FILES
-  gate.msg
+  vector.msg
 )
 
 generate_messages(
@@ -60,6 +60,6 @@ include_directories(
 find_package(OpenCV 3 REQUIRED)
 
 # Separate nodes in the package
-add_executable(${PROJECT_NAME}_node src/vision_node.cpp src/CameraInput.cpp src/DerivedDetector.cpp src/Filter.cpp)
+add_executable(${PROJECT_NAME}_node src/vision_node.cpp src/CameraInput.cpp src/BuoyDetector.cpp src/Filter.cpp)
 add_dependencies(${PROJECT_NAME}_node ${vision_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 target_link_libraries(${PROJECT_NAME}_node ${catkin_LIBRARIES} ${OpenCV_LIBRARIES})
