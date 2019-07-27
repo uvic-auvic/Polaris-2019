@@ -1,12 +1,15 @@
 #include <ros/ros.h>
+
 #include "vision/vector.h"
+#include "vision/change_detection.h"
 
 #include "CameraInput.hpp"
-#include "BuoyDetector.cpp"
+#include "BuoyDetector.hpp"
 
 // VisionSystem::EnabledDetector::NONE
 
-class VisionSystem {
+class VisionSystem
+{
 public:
     enum class EnabledDetector : int {
         NONE = 0,
@@ -18,7 +21,7 @@ private:
     // Ros fun stuff
     ros::NodeHandle nh_;
 
-    ros::Publisher vector_;
+    ros::Publisher pub_;
     ros::ServiceServer changeDetection_;
 
     vision::vector msg_;
@@ -39,21 +42,19 @@ public:
         
         // Zero is a placeholder (grab from Request)
         enabledDetectors_ = static_cast<EnabledDetector>(request.enabled_type);
-        response.enabled_type = enabledDetectors_;
+        response.enabled_type = static_cast<uint8_t>(enabledDetectors_);
 
         return true;
     }
 
-    explict VisionSystem(ros::NodeHandle& nh)
-    : nh_(nh), cameraInput_(),
-      buoyDetector_(cameraInput_, "package.xml"),
-      enabledDetectors_(EnabledDetector::NONE)
+    VisionSystem(ros::NodeHandle& nh) : 
+        nh_(nh), 
+        cameraInput_(),
+        buoyDetector_(cameraInput_, "package.xml"),
+        enabledDetectors_(EnabledDetector::NONE)
     {
-        vector_ = nh.advertise<vision::vector>("/vision/vector", 1);
-        changeDetection_ = nh.advertiseService<vision::change_detection_request, vision::change_detection_response>
-            ("/vision/change_detection", &changeDetectionHandler, this);
-        
-
+        pub_ = nh.advertise<vision::vector>("/vision/vector", 1);
+        changeDetection_ = nh.advertiseService("/vision/change_detection", &VisionSystem::changeDetectionHandler, this);
     }
 
     /* THIS IS THE MAIN LOOP OF THE VISION SYSTEM */
@@ -64,36 +65,35 @@ public:
         ros::Rate r(10); // Maybe Faster
         while(ros::ok() && !status)
         {
-            switch (enabledDetectors)
+            switch (enabledDetectors_)
             {
             case EnabledDetector::GATE:
                 // Use the gate detector class.
-                gate.update();
-                front_vec.publish();
+                buoyDetector_.update();
                 break;
-            case NONE:
+            case EnabledDetector::NONE:
                 break;
             default:
                 break;
             }
 
-            if (input.update())
+            if (cameraInput_.update())
             {
-                buoy.update();
+                buoyDetector_.update();
             }
 
-            vector.x_front = buoy.getXFront();
-            vector.y_front = buoy.getYFront();
-            vector.z_front = buoy.getZFront();
+            msg_.x_front = buoyDetector_.getXFront();
+            msg_.y_front = buoyDetector_.getYFront();
+            msg_.z_front = buoyDetector_.getZFront();
 
-            pub.publish(msg);
+            pub_.publish(msg_);
             ros::spinOnce();
             r.sleep();
         }
         
         return status;
     }
-}
+};
 
 int main(int argc, char **argv)
 {

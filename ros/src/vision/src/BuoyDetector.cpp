@@ -1,9 +1,9 @@
 #include "BuoyDetector.hpp"
+#include "Distance.hpp"
+
 #include "opencv2/opencv.hpp"
 #include "opencv2/xfeatures2d.hpp"
 #include <stdio.h>
-#include "Detector.hpp"
-#include "Distance.hpp"
 
 BuoyDetector::BuoyDetector(CameraInput& input, std::string cascade_name) : camera_input(input)
 {
@@ -13,7 +13,7 @@ BuoyDetector::BuoyDetector(CameraInput& input, std::string cascade_name) : camer
 BuoyDetector::~BuoyDetector(){}
 
 
-bool BuoyDetector::Update()
+bool BuoyDetector::update()
 {
     found_buoy = false;
     cv::Mat gray_frame;
@@ -57,9 +57,10 @@ bool BuoyDetector::Update()
             cv::Rect rect(scene_corners[0], scene_corners[2]);
             buoy_rect = rect;
             found_buoy = true;
-            distance_x_front = getDistanceX(buoy_rect, buoy_width, camera_input.getFrameFront);
-            distance_y_front = getDistanceY(buoy_rect, buoy_height, camera_input.getFrameFront);
-            distance_z_front = getDistanceZ(buoy_rect, buoy_width, 1);
+            
+            distance_x_front = Distance::getDistanceX(buoy_rect, buoy_width, camera_input.getFrameFront());
+            distance_y_front = Distance::getDistanceY(buoy_rect, buoy_height, camera_input.getFrameFront());
+            distance_z_front = Distance::getDistanceZ(buoy_rect, buoy_width, 1);
         }
     }
     return found_buoy;

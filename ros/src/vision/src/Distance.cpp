@@ -1,7 +1,6 @@
 #include "Distance.hpp"
 
-
-uint32_t Distance::getDistanceZ(cv::Rect object, double realWidth, uint8_t camera)
+uint32_t Distance::getDistanceZ(cv::Rect object, float realWidth, uint8_t camera)
 {   
     double focal = 0;
     if (camera == 0){
@@ -17,7 +16,7 @@ uint32_t Distance::getDistanceZ(cv::Rect object, double realWidth, uint8_t camer
     return z_distance;
 }
 
-uint32_t Distance::getDistanceX(cv::Rect object, double realWidth, cv::Mat frame)
+uint32_t Distance::getDistanceX(cv::Rect object, float realWidth, cv::Mat frame)
 {   
 
     cv::Point center(object.x + object.width/2, object.y - object.height/2);
@@ -32,7 +31,7 @@ uint32_t Distance::getDistanceX(cv::Rect object, double realWidth, cv::Mat frame
     return x_dis;
 }
 
-uint32_t Distance::getDistanceY(cv::Rect object, double realHieght, cv::Mat frame)
+uint32_t Distance::getDistanceY(cv::Rect object, float realHieght, cv::Mat frame)
 {   
     cv::Point center(object.x + object.width/2, object.y - object.height/2);
     int scale_factor = object.height/realHieght;

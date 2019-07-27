@@ -1,12 +1,12 @@
-#include <stdio.h>
+#ifndef BUOYDETECTOR
+#define BUOYDETECTOR
 
+#include <stdio.h>
 #include "opencv2/opencv.hpp"
 #include "opencv2/xfeatures2d.hpp"
 #include "Detector.hpp"
-#include "Distance.hpp"
 
-
-class BuoyDetector : public Detector, Distance
+class BuoyDetector : public Detector
 {
 private:
     typedef enum
@@ -38,6 +38,8 @@ private:
 public:
     BuoyDetector(CameraInput& input, std::string cascade_name);
     ~BuoyDetector();
-    bool Update();
+    bool update();
     cv::Rect GetRect();
 };
+
+#endif
