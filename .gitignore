@@ -18,6 +18,8 @@ ros/.catkin_workspace
 ros/test.launch
 **/.vsocde
 .idea/
+.dir-locals.el
+cmake-build-debug
 
 # TensorFlow
 ros/src/vision/tensorflow
