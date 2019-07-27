@@ -234,11 +234,6 @@ bool control_system::control_enable_service(ControlEnReq &req, ControlEnRes &res
     return true;
 }
 
-
-/*!
-  \brief TODO
-  \param msg Navigation message that's being populated with the results.
- */
 void control_system::compute_output_vectors(navigation::nav &msg)
 {
     if(depth_calibrated)
@@ -300,10 +295,12 @@ int main(int argc, char ** argv)
     ros::ServiceServer calib_depth = nh.advertiseService
         ("/nav/CalibrateSurfaceDepth", &control_system::calibrate_surface_depth, &ctrl);
 
+    // Suspected deprecated.
     ros::ServiceServer ctrl_en = nh.advertiseService
         ("ControlSysEnable", &control_system::control_enable_service, &ctrl);
 
     // This is used in navigation/src/thrustmap.cpp
+    // Being superceded by navigationsystem.cpp publishing to /navigation/heading
     ros::Publisher pub_vectors = nh.advertise<navigation::nav>("/nav/velocity_vectors", 1);
 
     ros::Publisher pub_ctrl_params = nh.advertise<navigation::depth_info>("/nav/depth_control_info", 1);

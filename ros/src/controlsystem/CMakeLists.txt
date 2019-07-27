@@ -136,7 +136,7 @@ include_directories(
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
 
-add_executable(${PROJECT_NAME}_node src/controlsystem_node.cpp src/statemachine.cpp src/movementsystem.cpp src/statussystem.cpp)
+add_executable(${PROJECT_NAME}_node src/controlsystem_node.cpp src/statemachine.cpp src/statussystem.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -197,10 +197,7 @@ target_link_libraries(${PROJECT_NAME}_node
 # if(TARGET ${PROJECT_NAME}-test)
 #   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
 # endif()
-catkin_add_gtest(movementsystem_test test/test_movementsystem.cpp)
-if(TARGET movementsystem_test)
-    target_link_libraries(movementsystem_test ${PROJECT_NAME})
-endif()
+
 
 ## Add folders to be run by python nosetests
 # catkin_add_nosetests(test)
