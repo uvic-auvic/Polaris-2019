@@ -30,13 +30,19 @@ public:
     control_system();
     ~control_system();
 
-
+	// Added
   void receive_nav_request(const navigation::nav_request::ConstPtr &msg);
+  // Added
   void receive_imu_data(const peripherals::imu::ConstPtr &msg);
+  // Added
   void receive_powerboard_data(const peripherals::powerboard::ConstPtr &msg);
-  void compute_output_vectors(navigation::nav &msg);
+  // Added
+  void package_vectors(navigation::nav &msg);
+  // Added
   void populate_depth_data(navigation::depth_info &msg);
+  // Added
   bool calibrate_surface_depth(AvgDataReq &req, AvgDataRes &res);
+  // Added
   bool control_enable_service(ControlEnReq &req, ControlEnRes &res);
 private:
   // ROS
@@ -48,7 +54,7 @@ private:
   velocity_controller* angular_vel_yw;
   velocity_controller* linear_vel_z;
 
-  // Filters
+  // Filters UNUSED
   std::unique_ptr<filter_base> depth_filter;
 
   // Data
@@ -204,11 +210,6 @@ bool control_system::calibrate_surface_depth(AvgDataReq &req, AvgDataRes &res)
     return true;
 }
 
-/*!
-  \brief Callback for service to enable different components of the control system.
-  \param req Service enable request.
-  \param res Response to enabled service request.
- */
 bool control_system::control_enable_service(ControlEnReq &req, ControlEnRes &res)
 {
     this->control_enables = req;
@@ -239,7 +240,7 @@ bool control_system::control_enable_service(ControlEnReq &req, ControlEnRes &res
   \brief TODO
   \param msg Navigation message that's being populated with the results.
  */
-void control_system::compute_output_vectors(navigation::nav &msg)
+void control_system::package_vectors(navigation::nav &msg)
 {
     if(depth_calibrated)
     {
@@ -300,9 +301,12 @@ int main(int argc, char ** argv)
     ros::ServiceServer calib_depth = nh.advertiseService
         ("/nav/CalibrateSurfaceDepth", &control_system::calibrate_surface_depth, &ctrl);
 
+    // Suspected deprecated.
     ros::ServiceServer ctrl_en = nh.advertiseService
         ("ControlSysEnable", &control_system::control_enable_service, &ctrl);
 
+    // This is used in navigation/src/thrustmap.cpp
+    // Being superceded by navigationsystem.cpp publishing to /navigation/heading
     ros::Publisher pub_vectors = nh.advertise<navigation::nav>("/nav/velocity_vectors", 1);
 
     ros::Publisher pub_ctrl_params = nh.advertise<navigation::depth_info>("/nav/depth_control_info", 1);
@@ -321,7 +325,7 @@ int main(int argc, char ** argv)
     while(ros::ok()) {
         // Get the output vectors from the control system
         navigation::nav output_vectors;
-        ctrl.compute_output_vectors(output_vectors);
+	      ctrl.package_vectors(output_vectors);
 
         // Publish the vectors
         pub_vectors.publish(output_vectors);

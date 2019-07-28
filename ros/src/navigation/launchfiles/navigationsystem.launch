@@ -1,0 +1,9 @@
+<launch>
+  <node name="navigationsystem"
+        pkg="navigation"
+        type="navigationsystem_node"
+        required="true"
+        output="screen"
+  >
+  </node>
+</launch>

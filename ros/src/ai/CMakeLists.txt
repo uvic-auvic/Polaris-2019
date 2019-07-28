@@ -37,13 +37,13 @@ include_directories(
   ${catkin_INCLUDE_DIRS}
 )
 
-add_executable(master src/master.cpp)
-target_link_libraries(master ${catkin_LIBRARIES})
-add_dependencies(master 
-  ai_generate_messages_cpp 
-  peripherals_generate_messages_cpp 
-  navigation_generate_messages_cpp 
-  vision_generate_messages_cpp 
-  ${catkin_EXPORTED_TARGETS}
-)
-target_include_directories(master PUBLIC ${Boost_INCLUDE_DIRS})
+#add_executable(master src/master.cpp)
+#target_link_libraries(master ${catkin_LIBRARIES})
+#add_dependencies(master
+#  ai_generate_messages_cpp
+#  peripherals_generate_messages_cpp
+#  navigation_generate_messages_cpp
+#  vision_generate_messages_cpp
+#  ${catkin_EXPORTED_TARGETS}
+#)
+#target_include_directories(master PUBLIC ${Boost_INCLUDE_DIRS})

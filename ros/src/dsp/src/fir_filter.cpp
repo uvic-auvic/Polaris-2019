@@ -1,7 +1,7 @@
 #include "fir_filter.hpp"
 #include <fstream>
 
-fir_filter::fir_filter(std::vector<double> filter_coefficients) :
+fir_filter::fir_filter(const std::vector<double>& filter_coefficients) :
     filter_coefficients(filter_coefficients)
 {
     // Initialize data to the right size
@@ -19,7 +19,7 @@ fir_filter::fir_filter(double* filter_coefficients, uint8_t filter_length)
     }
 }
 
-fir_filter::fir_filter(std::string csv_filename)
+fir_filter::fir_filter(const std::string& csv_filename)
 {
     // Open file
     std::ifstream file(csv_filename);
