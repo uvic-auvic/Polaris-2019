@@ -1,7 +1,7 @@
 #include "CameraInput.hpp"
 //#include <type_traits>
 
-CameraInput::CameraInput() : input_front(1)//, input_bottom(2), input_top(0)
+CameraInput::CameraInput() : input_front(0)// input_front(1), input_bottom(2), input_top(0)
 {}
 
 bool CameraInput::update()
