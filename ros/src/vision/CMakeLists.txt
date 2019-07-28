@@ -27,14 +27,12 @@ find_package(catkin REQUIRED COMPONENTS
 
 add_message_files(
   FILES
-  offset_position.msg
-  dice_offsets.msg
-  planar_offset.msg
+  gate.msg
 )
 
 generate_messages(
   DEPENDENCIES
-#  std_msgs
+  std_msgs
 )
 
 # This is useful when we want other packages to be able to use this package
@@ -50,6 +48,7 @@ catkin_package(
 )
 
 include_directories(
+  include
   ${catkin_INCLUDE_DIRS}
 )
 
@@ -61,10 +60,6 @@ include_directories(
 find_package(OpenCV 3 REQUIRED)
 
 # Separate nodes in the package
-add_executable(sender src/sender.cpp)
-add_dependencies(sender ${vision_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-target_link_libraries(sender ${catkin_LIBRARIES} ${OpenCV_LIBRARIES})
-
-add_executable(reciever src/reciever.cpp)
-add_dependencies(reciever ${vision_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-target_link_libraries(reciever ${catkin_LIBRARIES} ${OpenCV_LIBRARIES})
+add_executable(${PROJECT_NAME}_node src/vision_node.cpp src/CameraInput.cpp src/DerivedDetector.cpp src/Filter.cpp)
+add_dependencies(${PROJECT_NAME}_node ${vision_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+target_link_libraries(${PROJECT_NAME}_node ${catkin_LIBRARIES} ${OpenCV_LIBRARIES})
