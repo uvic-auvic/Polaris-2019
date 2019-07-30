@@ -4,8 +4,9 @@
 
 #define GATE_WIDTH (12) // Update with accurate measurement 
 
-GateDetector::GateDetector()
+GateDetector::GateDetector(CameraInput& input, std::string cascade_name) : camera_input(input)
 {
+    if(cascade_name != "") cascade.load(cascade_name);
 }
 
 GateDetector::~GateDetector()
@@ -13,27 +14,24 @@ GateDetector::~GateDetector()
 }
 
 //Update to return Detector Result Struct
-bool GateDetector::Update(CameraInput &input, std::string cascade_name)
+bool GateDetector::update()
 {
 
     cv::Rect Gate;
     cv::Mat frame_gray;
-    cv::CascadeClassifier object_cascade; 
-    object_cascade.load("gate_cascade.xml");//Insert Cascade Classifier Here
 
-    cv::cvtColor(frame, frame_gray, cv::COLOR_BGR2GRAY);
+    cv::cvtColor(camera_input.getFrameFront(), frame_gray, cv::COLOR_BGR2GRAY);
     cv::equalizeHist(frame_gray, frame_gray);
     // Detects objects and stores their location in object
     std::vector<cv::Rect> object;
-    object_cascade.detectMultiScale(frame_gray, object, 1.1, 2, 0|cv::CASCADE_SCALE_IMAGE, cv::Size(30, 30));
+    cascade.detectMultiScale(frame_gray, object, 1.1, 2, 0|cv::CASCADE_SCALE_IMAGE, cv::Size(30, 30));
 
     //if object is found in frame
-    Distance d;
     if(!object.empty()) {
         Gate = object[0];  
-        distance_z_front = d.getDistanceZ(Gate, GATE_WIDTH, camera_input.GetFrameFront());
-        distance_y_front = d.getDistanceX(Gate, GATE_WIDTH, camera_input.GetFrameFront());
-        distance_z_front = d.getDistanceY(Gate, GATE_WIDTH, camera_input.GetFrameFront());
+        distance_x_front = Distance::getDistanceX(Gate, GATE_WIDTH, camera_input.getFrameFront());
+        distance_y_front = Distance::getDistanceY(Gate, GATE_WIDTH, camera_input.getFrameFront());
+        distance_z_front = Distance::getDistanceZ(Gate, GATE_WIDTH, 1);
 
     }
     return true;
