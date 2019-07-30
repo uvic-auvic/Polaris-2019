@@ -7,6 +7,8 @@
   and feedback patterns that polaris must execute.
  */
 
+#include "navigation/nav_request.h"
+
 namespace procedures {
   class Procedure {
   public:
@@ -81,6 +83,36 @@ namespace procedures {
       return Procedure::ReturnCode::CONTINUE;
     }
   };
+
+  class IdleProcedure : public Procedure {
+	  ros::NodeHandle n;
+	  ros::ServiceClient set_heading;
+
+	  IdleProcedure()
+	  : n{}, set_heading(n.serviceClient<navigation::nav_request>("/navigation/set_heading"))
+	  {}
+  	IdleProcedure* clone() const override
+	  {
+  		return new IdleProcedure(*this);
+	  }
+
+	  Procedure::ReturnCode operator()() override {
+		  navigation::nav_request srv;
+
+		  srv.request.depth = 5;
+		  srv.request.yaw_rate = 0;
+		  srv.request.forwards_velocity = 0;
+		  srv.request.sideways_velocity = 0;
+
+		  if (!set_heading.call(srv))
+		  {
+			  ROS_WARN("Heading service call failed.");
+		  }
+
+		  return Procedure::ReturnCode::CONTINUE;
+	  }
+  };
+
 
   class ProcedureA : public Procedure {
 	  std::size_t iterations;
