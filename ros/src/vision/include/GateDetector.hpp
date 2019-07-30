@@ -6,14 +6,16 @@
 class GateDetector : public Detector
 {
 public:
-    GateDetector();
+    GateDetector(CameraInput& input, std::string cascade_name);
     ~GateDetector();
 
-    bool Update(cv::Mat frame, uint8_t camera);
+    bool update();
 
 private:
     cv::Point findGateDivider(cv::Mat frame);
     cv::Point avgPoint(std::vector<cv::Point2f> list);
 
-    CameraInput camera_input;
+    CameraInput& camera_input;
 };
+
+#endif

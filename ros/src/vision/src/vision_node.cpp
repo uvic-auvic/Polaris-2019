@@ -6,6 +6,7 @@
 #include "EnableDetector.hpp"
 #include "CameraInput.hpp"
 #include "BuoyDetector.hpp"
+#include "GateDetector.hpp"
 
 // VisionSystem::EnabledDetector::NONE
 
@@ -22,6 +23,7 @@ private:
 
     // Image capturing and detection systems.
     CameraInput cameraInput_;
+    GateDetector gateDetector_;
     BuoyDetector buoyDetector_;
 
     // Detectors that are Enabled
@@ -44,6 +46,7 @@ public:
     VisionSystem(ros::NodeHandle& nh) : 
         nh_(nh), 
         cameraInput_(),
+        gateDetector_(cameraInput_, "../cascades/GateCascades.xml"),
         buoyDetector_(cameraInput_, ""),
         enabledDetectors_(EnabledDetector::NONE)
     {
@@ -59,25 +62,31 @@ public:
         ros::Rate r(10); // Maybe Faster
         while(ros::ok() && !status)
         {
-            cameraInput_.update();
-
-            switch (enabledDetectors_)
+            if(cameraInput_.update()) 
             {
-            case EnabledDetector::BUOY:
-                // Use the gate detector class.
-                // buoyDetector_.update(); // not currently working
-                msg_.x_front = buoyDetector_.getXFront();
-                msg_.y_front = buoyDetector_.getYFront();
-                msg_.z_front = buoyDetector_.getZFront();
-                break;
-            case EnabledDetector::NONE:
-            default:
-                msg_.x_front = 0;
-                msg_.y_front = 0;
-                msg_.z_front = 0;
-                break;
+                switch (enabledDetectors_)
+                {
+                case EnabledDetector::GATE:
+                    gateDetector_.update();
+                    msg_.x = gateDetector_.getXFront();
+                    msg_.y = gateDetector_.getYFront();
+                    msg_.z = gateDetector_.getZFront();
+                    break;
+                case EnabledDetector::BUOY:
+                    // Use the gate detector class.
+                    // buoyDetector_.update(); // not currently working
+                    msg_.x = buoyDetector_.getXFront();
+                    msg_.y = buoyDetector_.getYFront();
+                    msg_.z = buoyDetector_.getZFront();
+                    break;
+                case EnabledDetector::NONE:
+                default:
+                    msg_.x = 0;
+                    msg_.y = 0;
+                    msg_.z = 0;
+                    break;
+                }
             }
-
 
             pub_.publish(msg_);
             ros::spinOnce();

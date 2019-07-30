@@ -1,3 +1,3 @@
-uint16 x_front
-uint16 y_front
-uint16 z_front
+uint16 x
+uint16 y
+uint16 z
