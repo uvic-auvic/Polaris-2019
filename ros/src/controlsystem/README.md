@@ -147,10 +147,13 @@ class NewProcedure : public Procedure {
     ros::NodeHandle nh;
     
     ros::ServiceClient change_detection;
-    
+
+public:  
     NewProcedure()
     :change_detection(nh.serviceClient<vision::change_detection>("/vision/change_detection")
     {} // Unused body.
+
+    // Clone procedure.
 
     Procedure::ReturnCode operator()() override {
         // Changing Detection Type (might not want to call this every time)
@@ -177,13 +180,16 @@ class NewProcedure : public Procedure {
     ros::Subscriber vision_vector;
     
     uint16_t x, y, z;
-    
+
+public: 
     void vectorUpdateCallback(const vision::vector::ConstPtr& message)
     {
         x = message.x;
         y = message.y;
         z = message.z;
     }
+    
+    // Clone procedure.
     
     NewProcedure()
     :vision_vector(nh.subscribe("/vision/vector", 1, &NewProcedure::vectorUpdateCallback, this))
