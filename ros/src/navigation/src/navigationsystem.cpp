@@ -238,6 +238,9 @@ public:
 		nh.getParam("max_angular_pos", max_angl_pos);
 		double dt = 10.0 / loop_rate;
 
+		// Reassign loop rate
+		loopRate_ = ros::Rate(loop_rate);
+
 		// Veloctiy Z Control System
 		double Kp_vel_z, Ki_vel_z;
 		nh.getParam("Kp_vel_z", Kp_vel_z);
@@ -299,10 +302,11 @@ public:
 			depth_.publish(heading_message);
 
 			ros::spinOnce();
+			loopRate_.sleep();
+
 			if (status) {
 				break;
 			}
-			loopRate_.sleep();
 		}
 		return status;
 	}
