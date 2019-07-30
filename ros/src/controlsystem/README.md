@@ -139,22 +139,109 @@ class DerivedProcedure : public Procedure {
 
 ## Interfacing with the AUV
 
+This is an example of using a service in a procedure. This example uses the service at `/vision/change_detection`.
+With service type of `vision::change_detection`.
+
+```c++
+class NewProcedure : public Procedure {
+    ros::NodeHandle nh;
+    
+    ros::ServiceClient change_detection;
+    
+    NewProcedure()
+    :change_detection(nh.serviceClient<vision::change_detection>("/vision/change_detection")
+    {} // Unused body.
+
+    Procedure::ReturnCode operator()() override {
+        // Changing Detection Type (might not want to call this every time)
+        vision::change_detection srv;
+        srv.message.enabled_type = EnabledDetector::BUOY;
+    
+        if(change_detection.call(srv)) {
+            // SUCCESS
+        } else {
+            // FAIL
+        }
+        return Procedure::ReturnCode::CONTINUE;
+    }
+}
+```
+
+This is an example of using a topic in a procedure. This example uses the publisher at `/vision/vector`.
+With a message type of `vision::vector`.
+
+```c++
+class NewProcedure : public Procedure {
+    ros::NodeHandle nh;
+    
+    ros::Subscriber vision_vector;
+    
+    uint16_t x, y, z;
+    
+    void vectorUpdateCallback(const vision::vector::ConstPtr& message)
+    {
+        x = message.x;
+        y = message.y;
+        z = message.z;
+    }
+    
+    NewProcedure()
+    :vision_vector(nh.subscribe("/vision/vector", 1, &NewProcedure::vectorUpdateCallback, this))
+    {} // Unused body.
+
+    Procedure::ReturnCode operator()() override {
+        // The vector information stored in x/y/z will update whenever the vision node updates.
+        // So no checking needs to be done.
+        // We can simply just access the data and make the assumption it is the most recent, because it will be.
+
+        return Procedure::ReturnCode::CONTINUE;
+    }
+}
+```
 
 ### Computer Vision
 The vector result from detection can be found with the `/vision/vector` topic. And what the detection system is looking for can be changed through the service `/vision/change_direction`. It is to note that the service takes in a 8-bit unsigned integer, it is recommended to use the enum class in the vision package's include `EnabledDetector.hpp`
+
+Results of detection can be obtained through a `ros::Subscriber` at `/vision/vector` these messages are defined as follows.
 ```
-ros::Subscriber @ /vision/vector (result of detection)
-ros::ServiceClient @ /vision/change_detection
+uint16 x
+uint16 y
+uint16 z
 ```
 
+To request a different type of detection the use of a `ros::ServiceClient` at `/vision/change_detection` is required.
+This service (`vision::change_detection`) is defined as follows. Note request is top and response is the bottom. Note the response is empty.
+To ensure you're requesting the right type of detection you must refer to the `EnabledDetector` enum class in `vision/include/EnabledDetector.hpp`
+```
+uint8 enabled_type
+---
+```
+
+
 ### Movement Related Functions
+
+To change the heading of the submarine use the `ros::ServiceClient` at `/navigation/set_heading` of type `navigation::nav_request`.
+This only requires the following fields to be filled out for the request.
+
+```
+float64 depth
+float64 yaw_rate
+float64 forwards_velocity
+float64 sideways_velocity
+---
+```
+
+
+To request the submarine to perform a full stop use the `ros::SericeClient` at `/navigation/full_stop` of type `navigation::full_stop`
+This service simply needs to be called to hault the movement of the AUV.
+```
+
+---
+```
+
+To get information about the current heading utilize the following topics.
+
 ```
 ros::Subscriber @ /navigation/heading
 ros::Subscriber @ /navigation/depth
-ros::serviceClient @ /navigation/set_heading
-ros::serviceClient @ /navigation/full_stop
-
-// For acquiring other infromation about the AUV query the
-// other availale topics.
-
 ```
