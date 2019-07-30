@@ -29,17 +29,17 @@ private:
 
 public:
 
-    // CHANGE FROM VOID TO RESPONSE AND REQUEST TYPE
-    bool changeDetectionHandler(vision::change_detection::Request& request, vision::change_detection::Response& response)
-    {
-        // Handle it.
-        
-        // Zero is a placeholder (grab from Request)
-        enabledDetectors_ = static_cast<EnabledDetector>(request.enabled_type);
-        response.enabled_type = static_cast<uint8_t>(enabledDetectors_);
-
-        return true;
-    }
+	/*!
+	 * This is the service for changing the detection type of the detection system.
+	 * @param request the requested detection type.
+	 * @param response unused/empty.
+	 * @return true if success or false if failure.
+	 */
+	bool changeDetectionCallback(vision::change_detection::Request& request, vision::change_detection::Response& response)
+	{
+		enabledDetectors_ = static_cast<EnabledDetector>(request.enabled_type);
+		return true;
+	}
 
     VisionSystem(ros::NodeHandle& nh) : 
         nh_(nh), 
@@ -48,7 +48,7 @@ public:
         enabledDetectors_(EnabledDetector::NONE)
     {
         pub_ = nh.advertise<vision::vector>("/vision/vector", 1);
-        changeDetection_ = nh.advertiseService("/vision/change_detection", &VisionSystem::changeDetectionHandler, this);
+        changeDetection_ = nh.advertiseService("/vision/change_detection", &VisionSystem::changeDetectionCallback, this);
     }
 
     /* THIS IS THE MAIN LOOP OF THE VISION SYSTEM */
