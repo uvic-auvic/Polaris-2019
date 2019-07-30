@@ -112,6 +112,7 @@ class DerivedProcedure : public Procedure {
     }
 
     /*!
+     * THIS IS NOT IMPLIMENTED
      * Provide a description of what the params are and do
      * @params:
      *  - param_name: description
