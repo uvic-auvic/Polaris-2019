@@ -7,7 +7,10 @@
   and feedback patterns that polaris must execute.
  */
 
+#include "navigation/nav.h"
 #include "navigation/nav_request.h"
+#include "vision/vector.h"
+#include "vision/change_detection.h"
 
 namespace procedures {
   class Procedure {
