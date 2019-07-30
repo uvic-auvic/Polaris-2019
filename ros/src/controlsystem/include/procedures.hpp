@@ -88,6 +88,7 @@ namespace procedures {
 	  ros::NodeHandle n;
 	  ros::ServiceClient set_heading;
 
+  public:
 	  IdleProcedure()
 	  : n{}, set_heading(n.serviceClient<navigation::nav_request>("/navigation/set_heading"))
 	  {}
@@ -112,6 +113,36 @@ namespace procedures {
 		  return Procedure::ReturnCode::CONTINUE;
 	  }
   };
+
+  class SurfaceProcedure : public Procedure {
+		ros::NodeHandle n;
+		ros::ServiceClient set_heading;
+
+	public:
+		SurfaceProcedure()
+		: n{}, set_heading(n.serviceClient<navigation::nav_request>("/navigation/set_heading"))
+		{}
+		SurfaceProcedure* clone() const override
+		{
+			return new SurfaceProcedure(*this);
+		}
+
+		Procedure::ReturnCode operator()() override {
+			navigation::nav_request srv;
+
+			srv.request.depth = 0;
+			srv.request.yaw_rate = 0;
+			srv.request.forwards_velocity = 0;
+			srv.request.sideways_velocity = 0;
+
+			if (!set_heading.call(srv))
+			{
+				ROS_WARN("Heading service call failed.");
+			}
+
+			return Procedure::ReturnCode::CONTINUE;
+		}
+	};
 
 
   class ProcedureA : public Procedure {
