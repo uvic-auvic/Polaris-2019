@@ -8,6 +8,7 @@
  */
 
 #include "navigation/nav.h"
+#include "navigation/depth_info.h"
 #include "navigation/nav_request.h"
 #include "vision/vector.h"
 #include "vision/change_detection.h"
@@ -68,8 +69,25 @@ namespace procedures {
   };
 
   class DiveProcedure : public Procedure {
+  	ros::NodeHandle n;
+  	ros::ServiceClient set_heading;
+  	ros::Subscriber depth;
+
+  	double desired_depth;
+  	double current_depth;
   public:
-    DiveProcedure() = default;
+
+  	void depthUpdateCallback(navigation::depth_info message)
+	  {
+			desired_depth = message.desired_depth;
+			current_depth = message.current_depth;
+	  }
+
+    DiveProcedure()
+    : n{},
+      set_heading(n.serviceClient<navigation::nav_request>("/navigation/set_heading")),
+      depth(n.subscribe("/navigation/depth", 1, &DiveProcedure::depthUpdateCallback, this))
+    {}
 
     DiveProcedure* clone() const override
     {
@@ -78,11 +96,21 @@ namespace procedures {
 
     Procedure::ReturnCode operator()() override
     {
-      // Monitor depth of submarine.
+	    navigation::nav_request srv;
 
-      // Adjust depth of submarine.
+	    srv.request.depth = 5;
+	    srv.request.yaw_rate = 0;
+	    srv.request.forwards_velocity = 0;
+	    srv.request.sideways_velocity = 0;
 
-      // Return status.
+	    if (!set_heading.call(srv))
+	    {
+		    ROS_WARN("Heading service call failed.");
+	    }
+
+	    if(std::abs(desired_depth - current_depth) < 0.01)
+	    	return Procedure::ReturnCode::NEXT;
+
       return Procedure::ReturnCode::CONTINUE;
     }
   };
