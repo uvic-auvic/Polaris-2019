@@ -7,6 +7,7 @@
 #include "CameraInput.hpp"
 #include "BuoyDetector.hpp"
 #include "GateDetector.hpp"
+#include "PathDetector.hpp"
 
 // VisionSystem::EnabledDetector::NONE
 
@@ -25,6 +26,7 @@ private:
     CameraInput cameraInput_;
     GateDetector gateDetector_;
     BuoyDetector buoyDetector_;
+    PathDetector pathDetector_;
 
     // Detectors that are Enabled
     EnabledDetector enabledDetectors_;
@@ -48,6 +50,7 @@ public:
         cameraInput_(),
         gateDetector_(cameraInput_, "../cascades/GateCascades.xml"),
         buoyDetector_(cameraInput_, ""),
+        pathDetector_(cameraInput_, ""),
         enabledDetectors_(EnabledDetector::NONE)
     {
         pub_ = nh.advertise<vision::vector>("/vision/vector", 1);
@@ -73,11 +76,16 @@ public:
                     msg_.z = gateDetector_.getZFront();
                     break;
                 case EnabledDetector::BUOY:
-                    // Use the gate detector class.
-                    // buoyDetector_.update(); // not currently working
+                    buoyDetector_.update();
                     msg_.x = buoyDetector_.getXFront();
                     msg_.y = buoyDetector_.getYFront();
                     msg_.z = buoyDetector_.getZFront();
+                    break;
+                case EnabledDetector::PATH:
+                    pathDetector_.update();
+                    msg_.x = pathDetector_.getXFront();
+                    msg_.y = pathDetector_.getYFront();
+                    msg_.z = pathDetector_.getZFront();
                     break;
                 case EnabledDetector::NONE:
                 default:
