@@ -168,7 +168,7 @@ class RotateProcedure : public Procedure {
 				return Procedure::ReturnCode::CONTINUE;
 			}
 
-	}
+	};
 class RotateRightAngleProcedure: public Procedure {
 		ros::NodeHandle n;
 		ros::ServiceClient set_heading;
