@@ -7,6 +7,7 @@
   and feedback patterns that polaris must execute.
  */
 
+#include "navigation/full_stop.h"
 #include "navigation/nav.h"
 #include "navigation/depth_info.h"
 #include "navigation/nav_request.h"
@@ -146,7 +147,137 @@ namespace procedures {
 	  }
   };
 
-  class SurfaceProcedure : public Procedure {
+  class RotateRightAngleProcedure: public Procedure {
+		ros::NodeHandle n;
+		ros::ServiceClient set_heading;
+		ros::ServiceClient full_stop_srv;
+		ros::Subscriber heading;
+
+		bool yaw_recorded;
+		double start_yaw;
+		bool has_heading;
+		navigation::nav current_heading;
+
+	public:
+  	void updateHeadingCallback(navigation::nav message)
+	  {
+		  has_heading = true;
+  		this->current_heading = message;
+	  }
+
+		RotateRightAngleProcedure()
+		: n{},
+			set_heading(n.serviceClient<navigation::nav_request>("/navigation/set_heading")),
+			full_stop_srv(n.serviceClient<navigation::full_stop>("/navigation/full_stop")),
+			heading(n.subscribe("/navigation/heading", 1, &RotateRightAngleProcedure::updateHeadingCallback, this)),
+			//current_heading(nullptr),
+			has_heading(false), yaw_recorded(false), start_yaw(0.0)
+		{ }
+
+		RotateRightAngleProcedure* clone() const override
+		{
+			return new RotateRightAngleProcedure(*this);
+		}
+
+		Procedure::ReturnCode operator()() override {
+  		// Ensure the procedure can access the data.
+			if(!has_heading) {
+  		  ROS_WARN("ORIENTATION NOT YET AVAILABLE DELAYING UNTIL AVAILABLE.");
+				return Procedure::ReturnCode::CONTINUE;
+			}
+
+			// After we have access to the data record the yaw.
+			if(!yaw_recorded) {
+				start_yaw = current_heading.orientation.yaw;
+				yaw_recorded = true;
+			}
+
+			// Start rotation.
+			navigation::nav_request srv;
+			srv.request.depth = current_heading.direction.z;
+			srv.request.yaw_rate = 5; // TODO TUNE PARAMETER IDK WHAT UNIT THIS IS IN
+			srv.request.forwards_velocity = 0;
+			srv.request.sideways_velocity = 0;
+
+			if (!set_heading.call(srv))
+			{
+				ROS_WARN("Heading service call failed.");
+			}
+
+			if(current_heading.orientation.yaw - start_yaw > 90) {
+				navigation::full_stop stop;
+				if(!full_stop_srv.call(stop)) {
+					ROS_WARN("Full stop service call failed.");
+				}
+				return Procedure::ReturnCode::NEXT;
+			}
+
+			return Procedure::ReturnCode::CONTINUE;
+		}
+	};
+
+  class ForwardsProcedure : public Procedure {
+  	ros::NodeHandle n;
+  	ros::ServiceClient set_heading;
+  	ros::ServiceClient full_stop;
+  	ros::Subscriber heading;
+
+		bool has_heading;
+  	navigation::nav current_heading;
+  	bool set_time;
+  	ros::Time start_time;
+
+  public:
+
+  	void updateHeadingCallback(navigation::nav message) {
+  		has_heading = true;
+  		current_heading = message;
+  	}
+
+  	ForwardsProcedure()
+  	: n{},
+  	  set_heading(n.serviceClient<navigation::nav_request>("/navigation/set_heading")),
+	    full_stop(n.serviceClient<navigation::full_stop>("/navigation/full_stop")),
+	    heading(n.subscribe("/navigation/heading", 1, &ForwardsProcedure::updateHeadingCallback, this)),
+	    has_heading(false), set_time(false), start_time{}
+	  { }
+
+	  ForwardsProcedure* clone() const override {
+  		return new ForwardsProcedure(*this);
+  	}
+
+  	Procedure::ReturnCode operator()() override {
+			if(!has_heading) {
+				ROS_WARN("ORIENTATION NOT YET AVAILABLE DELAYING UNTIL AVAILABLE.");
+				return Procedure::ReturnCode::CONTINUE;
+			}
+
+  		if(!set_time) {
+				start_time = ros::Time::now();
+				set_time = true;
+			}
+
+			navigation::nav_request srv;
+			srv.request.depth = current_heading.direction.z;
+			srv.request.forwards_velocity = 1;
+			srv.request.sideways_velocity = 0;
+			srv.request.yaw_rate = 0;
+
+		  if (!set_heading.call(srv)) {
+			  ROS_WARN("Heading service call failed.");
+		  }
+
+		  if((ros::Time::now() - start_time).sec >= 3) {
+		  	return Procedure::ReturnCode::NEXT;
+		  }
+
+		  return Procedure::ReturnCode::CONTINUE;
+  	}
+
+  };
+
+
+	class SurfaceProcedure : public Procedure {
 		ros::NodeHandle n;
 		ros::ServiceClient set_heading;
 
