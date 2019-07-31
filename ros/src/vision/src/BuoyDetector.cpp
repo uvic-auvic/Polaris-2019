@@ -5,9 +5,19 @@
 #include "opencv2/xfeatures2d.hpp"
 #include <stdio.h>
 
-BuoyDetector::BuoyDetector(CameraInput& input, std::string cascade_name) : camera_input(input)
+BuoyDetector::BuoyDetector(CameraInput& input, std::string buoy_type) : camera_input(input)
 {
-    if(cascade_name != "") cascade.load(cascade_name);
+    if(buoy_type == "Jiangshi") 
+        detector.buoy_img = cv::imread("../images/Jiangshi_lg.png", cv::IMREAD_GRAYSCALE);
+    else if(buoy_type == "Aswang")
+        detector.buoy_img = cv::imread("../images/Aswang_lg.png", cv::IMREAD_GRAYSCALE);
+    else if(buoy_type == "Draugr")
+        detector.buoy_img = cv::imread("../images/Draugr_lg.png", cv::IMREAD_GRAYSCALE);
+    else if(buoy_type == "Vetalas") 
+        detector.buoy_img = cv::imread("../images/Vetalas_lg.png", cv::IMREAD_GRAYSCALE);
+    detector.sift = cv::xfeatures2d::SIFT::create();
+    detector.matcher = cv::DescriptorMatcher::create(cv::DescriptorMatcher::FLANNBASED);
+    detector.sift->detectAndCompute(detector.buoy_img, cv::noArray(), detector.keypoints1, detector.descriptors1);
 }
 
 BuoyDetector::~BuoyDetector(){}
@@ -25,7 +35,7 @@ bool BuoyDetector::update()
     detector.sift->detectAndCompute(gray_frame, cv::noArray(), detector.keypoints2, detector.descriptors2);
     // matching the descriptor vectors with a FLANN based matcher
     std::vector< std::vector<cv::DMatch> > knn_matches;
-    detector.matcher->knnMatch( detector.descriptors1, detector.descriptors2, knn_matches, 2);
+    detector.matcher->knnMatch(detector.descriptors1, detector.descriptors2, knn_matches, 2);
 
     // Filter matches using the Lowe's ratio test
     std::vector<cv::DMatch> good_matches;
@@ -35,11 +45,11 @@ bool BuoyDetector::update()
         }
     }
     cv::Mat img_matches;
-    if( good_matches.size() >= min_match_count){
+    if(good_matches.size() >= min_match_count){
         std::vector<cv::Point2f> src_pts;
         std::vector<cv::Point2f> dst_pts;
 
-        for( cv::DMatch x : good_matches){
+        for(cv::DMatch x : good_matches){
             src_pts.push_back(detector.keypoints1[x.queryIdx].pt);
             dst_pts.push_back(detector.keypoints2[x.trainIdx].pt);
         }
@@ -52,8 +62,8 @@ bool BuoyDetector::update()
         obj_corners[3] = cvPoint(0, detector.buoy_img.rows);
         std::vector<cv::Point2f> scene_corners(4);
         
-        if ( !H.empty() ){
-            cv::perspectiveTransform( obj_corners, scene_corners, H);
+        if (!H.empty()){
+            cv::perspectiveTransform(obj_corners, scene_corners, H);
             cv::Rect rect(scene_corners[0], scene_corners[2]);
             buoy_rect = rect;
             found_buoy = true;

@@ -44,8 +44,9 @@ add_service_files(
  )
 
 catkin_package(
-  #LIBRARIES rov
-  CATKIN_DEPENDS roscpp rospy std_msgs message_runtime
+        #INCLUDE_DIRS include
+        #LIBRARIES rov
+        CATKIN_DEPENDS roscpp rospy std_msgs message_runtime
 )
 
 

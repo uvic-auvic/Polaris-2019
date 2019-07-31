@@ -10,6 +10,9 @@ void StateMachine::load_functors_(StateMachine::functormap_type& functor_map)
 	FUNC_INSERT("DiveProcedure", procedures::DiveProcedure());
 	FUNC_INSERT("ProcedureA", procedures::ProcedureA());
 	FUNC_INSERT("ProcedureB", procedures::ProcedureB());
+	FUNC_INSERT("IdleProcedure", procedures::IdleProcedure());
+	FUNC_INSERT("SurfaceProcedure", procedures::SurfaceProcedure());
+  FUNC_INSERT("RotateRightAngleProcedure", procedures::RotateRightAngleProcedure());
 }
 
   // Private member function used to check if a parameter.
@@ -64,18 +67,18 @@ void StateMachine::_read_states(XmlRpc::XmlRpcValue& state_list)
 
   states.reserve(64);
 
-  // State list namespaces
-  std::stack<std::pair<std::string,XmlRpc::XmlRpcValue>> stack;
-  stack.push(std::make_pair("", state_list));
+  // State list namespaces & processing stack.
+  std::stack<std::pair<std::string,XmlRpc::XmlRpcValue>> state_list_stack;
+  state_list_stack.push(std::make_pair("", state_list));
 
   // For each state_list, iterate over all items in that state list.
   // If the item is a state, add it to states.
-  // If the item is a state_list, add it to the stack of things to process.
-  while(!stack.empty()) {
-    std::string path = stack.top().first;
-    XmlRpc::XmlRpcValue current = stack.top().second;
+  // If the item is a state_list, add it to the state_list_stack of things to process.
+  while(!state_list_stack.empty()) {
+    std::string path = state_list_stack.top().first;
+    XmlRpc::XmlRpcValue current = state_list_stack.top().second;
     ROS_INFO_STREAM(path);
-    stack.pop();
+    state_list_stack.pop();
 
     for(XmlRpc::XmlRpcValue::ValueStruct::const_iterator it = current.begin(); it != current.end(); ++it)
       {
@@ -124,7 +127,7 @@ void StateMachine::_read_states(XmlRpc::XmlRpcValue& state_list)
           break;
         case 0b0000:
           ROS_DEBUG_STREAM("State List " << static_cast<std::string>(it->first));
-          stack.push(std::make_pair(path + it->first + '/', it->second));
+          state_list_stack.push(std::make_pair(path + it->first + '/', it->second));
           break;
         default:
           ROS_FATAL_STREAM("Invalid configuration provided. Found token(s) "
