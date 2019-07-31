@@ -15,7 +15,7 @@
 #include "vision/change_detection.h"
 
 namespace procedures {
-  class Procedure {
+class Procedure {
   public:
 
     // This is used to communicate what the return code means
@@ -69,85 +69,107 @@ namespace procedures {
 		}
   };
 
-  class DiveProcedure : public Procedure {
+class DiveProcedure : public Procedure {
   	ros::NodeHandle n;
   	ros::ServiceClient set_heading;
   	ros::Subscriber depth;
 
   	double desired_depth;
   	double current_depth;
-  public:
+	public:
 
-  	void depthUpdateCallback(navigation::depth_info message)
-	  {
-			desired_depth = message.desired_depth;
-			current_depth = message.current_depth;
-	  }
+		void depthUpdateCallback(navigation::depth_info message)
+		{
+				desired_depth = message.desired_depth;
+				current_depth = message.current_depth;
+		}
 
-    DiveProcedure()
-    : n{},
-      set_heading(n.serviceClient<navigation::nav_request>("/navigation/set_heading")),
-      depth(n.subscribe("/navigation/depth", 1, &DiveProcedure::depthUpdateCallback, this))
-    {}
+		DiveProcedure()
+		: n{},
+		set_heading(n.serviceClient<navigation::nav_request>("/navigation/set_heading")),
+		depth(n.subscribe("/navigation/depth", 1, &DiveProcedure::depthUpdateCallback, this))
+		{}
 
-    DiveProcedure* clone() const override
-    {
-    	return new DiveProcedure(*this);
-    }
+		DiveProcedure* clone() const override
+		{
+			return new DiveProcedure(*this);
+		}
 
-    Procedure::ReturnCode operator()() override
-    {
-	    navigation::nav_request srv;
+		Procedure::ReturnCode operator()() override
+		{
+			navigation::nav_request srv;
 
-	    srv.request.depth = 0.5;
-	    srv.request.yaw_rate = 0;
-	    srv.request.forwards_velocity = 0;
-	    srv.request.sideways_velocity = 0;
+			srv.request.depth = 0.5;
+			srv.request.yaw_rate = 0;
+			srv.request.forwards_velocity = 0;
+			srv.request.sideways_velocity = 0;
 
-	    if (!set_heading.call(srv))
-	    {
-		    ROS_WARN("Heading service call failed.");
-	    }
+			if (!set_heading.call(srv))
+			{
+				ROS_WARN("Heading service call failed.");
+			}
 
-	    if(std::abs(desired_depth - current_depth) < 0.01)
-	    	return Procedure::ReturnCode::NEXT;
+			if(std::abs(desired_depth - current_depth) < 0.01)
+				return Procedure::ReturnCode::NEXT;
 
-      return Procedure::ReturnCode::CONTINUE;
-    }
+		return Procedure::ReturnCode::CONTINUE;
+		}
   };
 
-  class IdleProcedure : public Procedure {
+class IdleProcedure : public Procedure {
 	  ros::NodeHandle n;
 	  ros::ServiceClient set_heading;
+	public:
+		IdleProcedure()
+		: n{}, set_heading(n.serviceClient<navigation::nav_request>("/navigation/set_heading"))
+		{}
+		IdleProcedure* clone() const override
+		{
+			return new IdleProcedure(*this);
+		}
 
-  public:
-	  IdleProcedure()
-	  : n{}, set_heading(n.serviceClient<navigation::nav_request>("/navigation/set_heading"))
-	  {}
-  	IdleProcedure* clone() const override
-	  {
-  		return new IdleProcedure(*this);
-	  }
-
-	  Procedure::ReturnCode operator()() override {
-		  navigation::nav_request srv;
+		Procedure::ReturnCode operator()() override {
+			navigation::nav_request srv;
 
 
-		  srv.request.depth = 0;
-		  srv.request.yaw_rate = 0;
-		  srv.request.forwards_velocity = 0;
-		  srv.request.sideways_velocity = 0;
+			srv.request.depth = 0;
+			srv.request.yaw_rate = 0;
+			srv.request.forwards_velocity = 0;
+			srv.request.sideways_velocity = 0;
 
-		  if (!set_heading.call(srv))
-		  {
-			  ROS_WARN("Heading service call failed.");
-		  }
+			if (!set_heading.call(srv))
+			{
+				ROS_WARN("Heading service call failed.");
+			}
 
-		  return Procedure::ReturnCode::CONTINUE;
-	  }
+			return Procedure::ReturnCode::CONTINUE;
+		}
   };
 
-  class RotateRightAngleProcedure: public Procedure {
+class RotateProcedure : public Procedure {
+		private:
+			ros::NodeHandle n;
+			ros::ServiceClient full_stop_srv;
+			ros::Subscriber heading;
+
+			bool yaw_recorded;
+			double start_yaw;
+			bool has_heading;
+			navigation::nav current_heading;
+		public:
+			RotateProcedure(){
+
+			}
+			RotateProcedure* clone() const override{
+				return new RotateProcedure(*this);
+			}
+			Procedure::ReturnCode operator()() override{
+
+				return Procedure::ReturnCode::CONTINUE;
+			}
+
+	};
+class RotateRightAngleProcedure: public Procedure {
 		ros::NodeHandle n;
 		ros::ServiceClient set_heading;
 		ros::ServiceClient full_stop_srv;
@@ -159,8 +181,7 @@ namespace procedures {
 		navigation::nav current_heading;
 
 	public:
-  	void updateHeadingCallback(navigation::nav message)
-	  {
+  	void updateHeadingCallback(navigation::nav message){
 		  has_heading = true;
   		this->current_heading = message;
 	  }
@@ -216,7 +237,8 @@ namespace procedures {
 		}
 	};
 
-  class ForwardsProcedure : public Procedure {
+ 
+class ForwardsProcedure : public Procedure {
   	ros::NodeHandle n;
   	ros::ServiceClient set_heading;
   	ros::ServiceClient full_stop;
@@ -227,117 +249,95 @@ namespace procedures {
   	bool set_time;
   	ros::Time start_time;
 
-  public:
-
-  	void updateHeadingCallback(navigation::nav message) {
-  		has_heading = true;
-  		current_heading = message;
-  	}
-
-  	ForwardsProcedure()
-  	: n{},
-  	  set_heading(n.serviceClient<navigation::nav_request>("/navigation/set_heading")),
-	    full_stop(n.serviceClient<navigation::full_stop>("/navigation/full_stop")),
-	    heading(n.subscribe("/navigation/heading", 1, &ForwardsProcedure::updateHeadingCallback, this)),
-	    has_heading(false), set_time(false), start_time{}
-	  { }
-
-	  ForwardsProcedure* clone() const override {
-  		return new ForwardsProcedure(*this);
-  	}
-
-  	Procedure::ReturnCode operator()() override {
-			if(!has_heading) {
-				ROS_WARN("ORIENTATION NOT YET AVAILABLE DELAYING UNTIL AVAILABLE.");
-				return Procedure::ReturnCode::CONTINUE;
-			}
-
-  		if(!set_time) {
-				start_time = ros::Time::now();
-				set_time = true;
-			}
-
-			navigation::nav_request srv;
-			srv.request.depth = current_heading.direction.z;
-			srv.request.forwards_velocity = 1;
-			srv.request.sideways_velocity = 0;
-			srv.request.yaw_rate = 0;
-
-		  if (!set_heading.call(srv)) {
-			  ROS_WARN("Heading service call failed.");
-		  }
-
-		  if((ros::Time::now() - start_time).sec >= 3) {
-		  	return Procedure::ReturnCode::NEXT;
-		  }
-
-		  return Procedure::ReturnCode::CONTINUE;
-  	}
-
-  };
-
-
-	class SurfaceProcedure : public Procedure {
-		ros::NodeHandle n;
-		ros::ServiceClient set_heading;
-
 	public:
-		SurfaceProcedure()
-		: n{}, set_heading(n.serviceClient<navigation::nav_request>("/navigation/set_heading"))
-		{}
-		SurfaceProcedure* clone() const override
-		{
-			return new SurfaceProcedure(*this);
+
+		void updateHeadingCallback(navigation::nav message) {
+			has_heading = true;
+			current_heading = message;
+		}
+
+		ForwardsProcedure()
+		: n{},
+		set_heading(n.serviceClient<navigation::nav_request>("/navigation/set_heading")),
+			full_stop(n.serviceClient<navigation::full_stop>("/navigation/full_stop")),
+			heading(n.subscribe("/navigation/heading", 1, &ForwardsProcedure::updateHeadingCallback, this)),
+			has_heading(false), set_time(false), start_time{}
+		{ }
+
+		ForwardsProcedure* clone() const override {
+			return new ForwardsProcedure(*this);
 		}
 
 		Procedure::ReturnCode operator()() override {
-			navigation::nav_request srv;
+				if(!has_heading) {
+					ROS_WARN("ORIENTATION NOT YET AVAILABLE DELAYING UNTIL AVAILABLE.");
+					return Procedure::ReturnCode::CONTINUE;
+				}
 
-			srv.request.depth = 0;
-			srv.request.yaw_rate = 0;
-			srv.request.forwards_velocity = 0;
-			srv.request.sideways_velocity = 0;
+			if(!set_time) {
+					start_time = ros::Time::now();
+					set_time = true;
+				}
 
-			if (!set_heading.call(srv))
-			{
+				navigation::nav_request srv;
+				srv.request.depth = current_heading.direction.z;
+				srv.request.forwards_velocity = 1;
+				srv.request.sideways_velocity = 0;
+				srv.request.yaw_rate = 0;
+
+			if (!set_heading.call(srv)) {
 				ROS_WARN("Heading service call failed.");
+			}
+
+			if((ros::Time::now() - start_time).sec >= 3) {
+				return Procedure::ReturnCode::NEXT;
 			}
 
 			return Procedure::ReturnCode::CONTINUE;
 		}
+
 	};
 
+class SurfaceProcedure : public Procedure {
+			ros::NodeHandle n;
+			ros::ServiceClient set_heading;
 
-  class ProcedureA : public Procedure {
-	  std::size_t iterations;
+		public:
+			SurfaceProcedure()
+			: n{}, set_heading(n.serviceClient<navigation::nav_request>("/navigation/set_heading"))
+			{}
+			SurfaceProcedure* clone() const override
+			{
+				return new SurfaceProcedure(*this);
+			}
 
-  public:
-	  ProcedureA() = default;
+			Procedure::ReturnCode operator()() override {
+				navigation::nav_request srv;
 
-    ProcedureA* clone() const override
-	  {
-		  return new ProcedureA(*this);
-	  }
+				srv.request.depth = 0;
+				srv.request.yaw_rate = 0;
+				srv.request.forwards_velocity = 0;
+				srv.request.sideways_velocity = 0;
 
-	  Procedure::ReturnCode operator()() override
-	  {
-		  if(iterations == 5)
-			  return Procedure::ReturnCode::NEXT;
-		  ++iterations;
-		  ROS_INFO_STREAM("ProcedureA");
-		  return Procedure::ReturnCode::CONTINUE;
-	  }
-  };
+				if (!set_heading.call(srv))
+				{
+					ROS_WARN("Heading service call failed.");
+				}
 
-	class ProcedureB : public Procedure {
+				return Procedure::ReturnCode::CONTINUE;
+			}
+		};
+
+
+class ProcedureA : public Procedure {
 		std::size_t iterations;
 
 	public:
-		ProcedureB() = default;
+		ProcedureA() = default;
 
-		ProcedureB* clone() const override
+		ProcedureA* clone() const override
 		{
-			return new ProcedureB(*this);
+			return new ProcedureA(*this);
 		}
 
 		Procedure::ReturnCode operator()() override
@@ -345,10 +345,31 @@ namespace procedures {
 			if(iterations == 5)
 				return Procedure::ReturnCode::NEXT;
 			++iterations;
-			ROS_INFO_STREAM("ProcedureB");
+			ROS_INFO_STREAM("ProcedureA");
 			return Procedure::ReturnCode::CONTINUE;
 		}
 	};
+
+class ProcedureB : public Procedure {
+			std::size_t iterations;
+
+		public:
+			ProcedureB() = default;
+
+			ProcedureB* clone() const override
+			{
+				return new ProcedureB(*this);
+			}
+
+			Procedure::ReturnCode operator()() override
+			{
+				if(iterations == 5)
+					return Procedure::ReturnCode::NEXT;
+				++iterations;
+				ROS_INFO_STREAM("ProcedureB");
+				return Procedure::ReturnCode::CONTINUE;
+			}
+		};
 
 }
 

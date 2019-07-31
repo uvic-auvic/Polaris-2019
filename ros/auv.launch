@@ -26,7 +26,7 @@
   <include file="$(find peripherals)/launchfiles/motors.launch"/>
 
   <!-- Control System -->
-  <include file="$(find controlsystem)/launchfiles/controlsystem.launch">
+  <include file="$(find controlsystem)/launchfiles/tests/controlsystem_idle_test.launch">
   </include>
 
   <!-- Navigation Nodes -->
