@@ -27,13 +27,13 @@
 
   <!-- Control System -->
   <include file="$(find controlsystem)/launchfiles/controlsystem.launch">
-    <arg name="max_linear_vel" value="$(arg max_linear_vel)"/>
-    <arg name="max_angular_vel" value="$(arg max_angular_vel)"/>
   </include>
 
   <!-- Navigation Nodes -->
-	<!-- Navigation System -->
+  <!-- Navigation System -->
   <include file="$(find navigation)/launchfiles/navigationsystem.launch">
+    <arg name="max_linear_vel" value="$(arg max_linear_vel)"/>
+    <arg name="max_angular_vel" value="$(arg max_angular_vel)"/>
   </include>
 	<!-- Thrustmap Node -->
   <include file="$(find navigation)/launchfiles/thrustmap.launch">
