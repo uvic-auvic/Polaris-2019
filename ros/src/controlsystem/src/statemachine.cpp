@@ -12,6 +12,7 @@ void StateMachine::load_functors_(StateMachine::functormap_type& functor_map)
 	FUNC_INSERT("ProcedureB", procedures::ProcedureB());
 	FUNC_INSERT("IdleProcedure", procedures::IdleProcedure());
 	FUNC_INSERT("SurfaceProcedure", procedures::SurfaceProcedure());
+  FUNC_INSERT("RotateRightAngleProcedure", procedures::RotateRightAngleProcedure());
 }
 
   // Private member function used to check if a parameter.
