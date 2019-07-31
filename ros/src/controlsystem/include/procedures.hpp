@@ -98,7 +98,7 @@ namespace procedures {
     {
 	    navigation::nav_request srv;
 
-	    srv.request.depth = 5;
+	    srv.request.depth = 0.5;
 	    srv.request.yaw_rate = 0;
 	    srv.request.forwards_velocity = 0;
 	    srv.request.sideways_velocity = 0;
@@ -131,7 +131,8 @@ namespace procedures {
 	  Procedure::ReturnCode operator()() override {
 		  navigation::nav_request srv;
 
-		  srv.request.depth = 5;
+
+		  srv.request.depth = 0;
 		  srv.request.yaw_rate = 0;
 		  srv.request.forwards_velocity = 0;
 		  srv.request.sideways_velocity = 0;
