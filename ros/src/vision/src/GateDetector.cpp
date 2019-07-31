@@ -2,7 +2,8 @@
 #include "Distance.hpp"
 #include "opencv2/xfeatures2d.hpp"
 
-#define GATE_WIDTH (12) // Update with accurate measurement 
+#define GATE_WIDTH      120
+#define GATE_HEIGHT     60
 
 GateDetector::GateDetector(CameraInput& input, std::string cascade_name) : camera_input(input)
 {
@@ -30,7 +31,7 @@ bool GateDetector::update()
     if(!object.empty()) {
         Gate = object[0];  
         distance_x_front = Distance::getDistanceX(Gate, GATE_WIDTH, camera_input.getFrameFront());
-        distance_y_front = Distance::getDistanceY(Gate, GATE_WIDTH, camera_input.getFrameFront());
+        distance_y_front = Distance::getDistanceY(Gate, GATE_HEIGHT, camera_input.getFrameFront());
         distance_z_front = Distance::getDistanceZ(Gate, GATE_WIDTH, 1);
 
     }
