@@ -38,15 +38,15 @@ class Procedure {
 	  }
 
 		// Functors require access to sensors.
-		// And mechanism to control submarine.   
- 
+		// And mechanism to control submarine.
+
     // Invoking base operator() will result in FATAL
     // return code.
     virtual ReturnCode operator()() {
 			// Sensors to measure actual
 			// Compare actual to goal.
 			// HMMM this sounds like a PID controller...
-			// Could this be provided for convenience in the base 
+			// Could this be provided for convenience in the base
 			// class? or should it be left up to the derived?
 
 			// Adjust movement based on previous computation.
@@ -169,6 +169,93 @@ class RotateProcedure : public Procedure {
 			}
 
 	};
+
+// GateLocateProcedure updates the navigation heading from the vector provided by the vision GateDector class
+class GateLocateProcedure: public Procedure {
+
+		ros::NodeHandle n;
+		ros::ServiceClient set_heading;
+		ros::Subscriber heading;
+    ros::Subscriber vision_vector;
+
+		bool has_gate_vector;
+
+    uint16_t x, y, z;
+
+		navigation::nav nav_heading;
+
+	public:
+  	//void updateHeadingCallback(navigation::nav message){
+		//  has_heading = true;
+  	//	this->current_heading = message;
+	  //}
+
+    void vectorUpdateCallback(const vision::vector::ConstPtr& message)
+    {
+      if(!message) {
+  		  ROS_WARN("GATE VECTOR NOT YET AVAILABLE DELAYING UNTIL AVAILABLE.");
+				return Procedure::ReturnCode::CONTINUE;
+			}
+
+      x = message.x;
+      y = message.y;
+      z = message.z;
+      has_gate_vector = true;
+    }
+
+		GateLocateProcedure()
+		: n{},
+			set_heading(n.serviceClient<navigation::nav_request>("/navigation/set_heading")),
+			//full_stop_srv(n.serviceClient<navigation::full_stop>("/navigation/full_stop")),
+			//heading(n.subscribe("/navigation/heading", 1, &RotateRightAngleProcedure::updateHeadingCallback, this)),
+			//current_heading(nullptr),
+			has_heading(false),
+      //yaw_recorded(false), start_yaw(0.0),
+      vision_vector(n.subscribe("/vision/GateDetector", 1, &GateLocateProcedure::vectorUpdateCallback, this))
+		{ }
+
+		GateLocateProcedure* clone() const override
+		{
+			return new GateLocateProcedure(*this);
+		}
+
+		Procedure::ReturnCode operator()() override {
+  		// Ensure the procedure can access the data.
+			if(!has_gate_vector) {
+  		  ROS_WARN("GATE VECTOR NOT YET AVAILABLE DELAYING UNTIL AVAILABLE.");
+				return Procedure::ReturnCode::CONTINUE;
+			}
+
+			// After we have access to the data record the yaw.
+			//if(!yaw_recorded) {
+			//	start_yaw = current_heading.orientation.yaw;
+			//	yaw_recorded = true;
+			//}
+
+			// Set a new heading towards the gate
+			navigation::nav_request srv;
+			srv.request.depth = z;
+			srv.request.yaw_rate = 5; // TODO TUNE PARAMETER IDK WHAT UNIT THIS IS IN
+			srv.request.forwards_velocity = 0;
+			srv.request.sideways_velocity = 0;
+
+			if (!set_heading.call(srv))
+			{
+				ROS_WARN("Heading service call failed.");
+			}
+
+			//if(current_heading.orientation.yaw - start_yaw > 90) {
+			//	navigation::full_stop stop;
+			//	if(!full_stop_srv.call(stop)) {
+			//		ROS_WARN("Full stop service call failed.");
+			//	}
+			//	return Procedure::ReturnCode::NEXT;
+			//}
+
+			return Procedure::ReturnCode::CONTINUE;
+		}
+};
+
 class RotateRightAngleProcedure: public Procedure {
 		ros::NodeHandle n;
 		ros::ServiceClient set_heading;
@@ -237,7 +324,7 @@ class RotateRightAngleProcedure: public Procedure {
 		}
 	};
 
- 
+
 class ForwardsProcedure : public Procedure {
   	ros::NodeHandle n;
   	ros::ServiceClient set_heading;
