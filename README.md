@@ -4,7 +4,7 @@ All the code related to the operation of the polaris 2019 AUVIC submarine
 
 ## Setting up your Environment
 
-The 2 major necessary components needed to develop, build and execute the project are:
+The 2 major necessary components needed to develop, build, and execute the project are:
 - Ubuntu 16.04 Operating System
 - ROS Kinetic
 
@@ -12,12 +12,13 @@ Due to ROS not supporting the later Ubuntu 18.04 OS, it is currently necessary t
 
 ### Ubuntu 16.04
 
-There are several pre-requisites that a developer can fall under when setting up the necessary environment, and associated action items:
-1. **Ubuntu 16.04 OS already installed**: No necessary actions needed
-2. **Another Unix-like OS installed (e.g Debian, Ubuntu...) that is not Ubuntu 16.04**: Either install an Ubuntu 16.04 VM, or create an Ubuntu 16.04 docker container
-3. **A Windows OS installed**: Either install an Ubuntu 16.04 VM, install Docker for Windows to run an Ubuntu 16.04 container, or install dual-boot.
+There are several scenarios that a developer can fall under when setting up the necessary environment:
 
-**Note:** (Complete section on Windows 10 Home Virtualization issue)
+1. **Ubuntu 16.04 OS already installed**: No necessary actions needed
+
+2. **Another Unix-like OS installed (e.g Debian, Ubuntu...) that is not Ubuntu 16.04**: Either install an Ubuntu 16.04 VM, or create an Ubuntu 16.04 docker container
+
+3. **A Windows OS installed**: Either install an Ubuntu 16.04 VM, install Docker for Windows Pro (Home version not supported) to run an Ubuntu 16.04 container, or install dual-boot.
 
 ### ROS Kinetic
 
