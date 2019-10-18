@@ -6,12 +6,12 @@ All the code related to the operation of the polaris 2019 AUVIC submarine
 
 ### Docker
 
-1. Make sure docker is installed on your system, this is easiest on Linux and MacOS (Windows is a pain to install docker on).
+1. If you are not already running Ubuntu 16.04 (Xenial Xerius), then make sure docker is installed on your system. This is easiest on Linux and MacOS (Windows Home is a pain to install docker on).
 
-2. Use the docker_make.sh script to the submarine system.
+2. Use the docker_make.sh script to build the Polaris submarine system in the docker virtual machine.
 
 3. Use the docker scripts to ensure the images are up to date, if unsure use the last script.
-    1. Use the docker_make.sh script to build the submarine.
+    1. Use the docker_make.sh script to build the submarine system.
     2. Use the docker_run.sh script to start the submarine system.
     3. Use the docker_shell.sh script to start the docker containers interactive mode (your terminal will be occupied by the docker containers terminal). This script can also be used to invoke the commands in the previous two images.
 
