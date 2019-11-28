@@ -9,11 +9,13 @@ jobs:
     
     steps:
     - uses: actions/checkout@v1
-    - name: Clean ROS project
+    - name: Clean ROS Vision package
       run: |
-        cd ros 
-        catkin_make clean
-    - name: Build ROS project
+        cd ros/src/vision
+        rm -rf ./build
+    - name: Build ROS Vision package
       run: |
-        cd ros
-        catkin_make
+        cd ros/src/vision
+        mkdir build
+        cd build
+        cake ..
