@@ -18,4 +18,4 @@ jobs:
         cd ros/src/vision
         mkdir build
         cd build
-        cake ..
+        cmake ..
