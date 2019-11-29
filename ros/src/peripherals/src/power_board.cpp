@@ -301,6 +301,9 @@ int main(int argc, char ** argv)
     int loop_rate;
     nh.getParam("loop_rate", loop_rate);
 
+    // Wait until serial device manager is ready
+    ros::service::waitForService("/serial_manager/GetDevicePort", -1);
+
     ros::ServiceClient client = nh.serviceClient<monitor::GetSerialDevice>("/serial_manager/GetDevicePort");
     if (!client.call(srv)) {
         ROS_INFO("Couldn't get \"%s\" file descripter. Shutting down", srv.request.device_id.c_str());
