@@ -16,7 +16,6 @@
 #define RESPONSE_SIZE_WTR (4)
 #define RESPONSE_SIZE_PIN (5)
 #define RESPONSE_SIZE_PEX (4)
-#define MAX_MSG_CHARS (255)
 
 #define PEX_TO_PASCAL_MUL (68.94757)
 #define RETRY_COUNT (3)
@@ -66,7 +65,7 @@ std::string power_board::write(const std::string &out, bool ignore_response, std
     }
 
     // Used for commands to read data
-    return connection->readline(MAX_MSG_CHARS, eol);
+    return connection->readline(65536ul, eol);
 }
 
 std::size_t power_board::write(const std::string &out, uint8_t *in, std::size_t read_len, std::string eol)
