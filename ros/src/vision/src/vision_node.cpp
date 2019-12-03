@@ -49,7 +49,7 @@ public:
         nh_(nh), 
         cameraInput_(),
         gateDetector_(cameraInput_, "../cascades/GateCascades.xml"),
-        buoyDetector_(cameraInput_, ""),
+        buoyDetector_(cameraInput_, "Jiangshi"),
         pathDetector_(cameraInput_, ""),
         enabledDetectors_(EnabledDetector::NONE)
     {

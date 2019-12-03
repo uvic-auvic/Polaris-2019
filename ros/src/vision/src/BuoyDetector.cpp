@@ -3,6 +3,7 @@
 
 #include "opencv2/opencv.hpp"
 #include "opencv2/xfeatures2d.hpp"
+#include "ros/console.h"
 #include <stdio.h>
 
 BuoyDetector::BuoyDetector(CameraInput& input, std::string buoy_type) : camera_input(input)
@@ -15,6 +16,12 @@ BuoyDetector::BuoyDetector(CameraInput& input, std::string buoy_type) : camera_i
         detector.buoy_img = cv::imread("../images/Draugr_lg.png", cv::IMREAD_GRAYSCALE);
     else if(buoy_type == "Vetalas") 
         detector.buoy_img = cv::imread("../images/Vetalas_lg.png", cv::IMREAD_GRAYSCALE);
+    
+    if (detector.buoy_img.data == NULL) {
+        ROS_INFO("Unable to process image: Either image is empty, or image is not grayscale.");
+        return;
+    }
+    
     detector.sift = cv::xfeatures2d::SIFT::create();
     detector.matcher = cv::DescriptorMatcher::create(cv::DescriptorMatcher::FLANNBASED);
     detector.sift->detectAndCompute(detector.buoy_img, cv::noArray(), detector.keypoints1, detector.descriptors1);
