@@ -40,7 +40,12 @@ bool GateDetector::update()
 
 cv::Point GateDetector::findGateDivider(cv::Mat frame){
     cv::Mat img1 = frame;
-    cv::Mat img2 = cv::imread("img_matches/gate_divide.PNG");
+    cv::Mat img2 = cv::imread("img_matches/gate_divide.PNG", cv::IMREAD_GRAYSCALE);
+
+    if (img2.data == NULL) {
+        ROS_INFO("Unable to process image: Either image is empty, or image is not grayscale.");
+        return;
+    }
 
     int minHessian = 400;
     cv::Ptr<cv::xfeatures2d::SURF> detector = cv::xfeatures2d::SURF::create( minHessian );
