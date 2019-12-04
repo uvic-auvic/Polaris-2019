@@ -1,13 +1,18 @@
 #include "GateDetector.hpp"
 #include "Distance.hpp"
 #include "opencv2/xfeatures2d.hpp"
+#include "ros/console.h"
 
 #define GATE_WIDTH      120
 #define GATE_HEIGHT     60
 
 GateDetector::GateDetector(CameraInput& input, std::string cascade_name) : camera_input(input)
 {
-    if(cascade_name != "") cascade.load(cascade_name);
+    if(cascade_name != "") {
+        if (!cascade.load(cascade_name)) {
+            ROS_INFO("Error loading cascade...");
+        }
+    }
 }
 
 GateDetector::~GateDetector()
@@ -44,7 +49,6 @@ cv::Point GateDetector::findGateDivider(cv::Mat frame){
 
     if (img2.data == NULL) {
         ROS_INFO("Unable to process image: Either image is empty, or image is not grayscale.");
-        return;
     }
 
     int minHessian = 400;
