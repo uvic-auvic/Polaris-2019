@@ -9,13 +9,18 @@ jobs:
     
     steps:
     - uses: actions/checkout@v1
-    - name: Clean ROS Vision package
-      run: |
-        cd ros/src/vision
-        rm -rf ./build
-    - name: Build ROS Vision package
-      run: |
-        cd ros/src/vision
-        mkdir build
-        cd build
-        cmake ..
+    - name: Install ROS 
+      run: | 
+        sudo bash -c 'echo "deb http://packages.ros.org/ros/ubuntu xenial main" > etc/apt/sources.list.d/ros-latest.list'
+        sudo bash -c 'apt-key adv --keyserver "hkp://keyserver.ubuntu.com:80" --recv-key C1CF6E31E6BADE8868B172B4F42ED6FBAB17C654'
+        sudo bash -c 'apt-get update && apt-get install -y ros-kinetic-desktop-full'
+#    - name: Clean ROS Vision package
+#      run: |
+#        cd ros/src/vision
+#        rm -rf ./build
+#    - name: Build ROS Vision package
+#      run: |
+#        cd ros/src/vision
+#        mkdir build
+#        cd build
+#        cmake ..
