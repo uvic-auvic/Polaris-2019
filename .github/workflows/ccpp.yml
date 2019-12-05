@@ -12,7 +12,7 @@ jobs:
     - name: Install ROS 
       run: | 
         sudo bash -c 'cat /etc/apt/sources.list'
-        sudo bash -c 'echo "dev http://packages.ros.org/ros/ubuntu xenial main" >> etc/apt/sources.list'
+        sudo bash -c 'echo "deb http://packages.ros.org/ros/ubuntu xenial main" >> etc/apt/sources.list'
 #    - name: Clean ROS Vision package
 #      run: |
 #        cd ros/src/vision
