@@ -19,4 +19,5 @@ jobs:
         sudo bash -c 'rosdep init && rosdep update'
         sudo bash -c 'source /opt/ros/kinetic/setup.bash'
         sudo bash -c 'cd ros/'
+        sudo bash -c 'pwd'
         sudo bash -c 'catkin_make'
