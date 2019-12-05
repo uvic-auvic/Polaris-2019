@@ -15,6 +15,9 @@ jobs:
         sudo bash -c 'echo "deb http://packages.ros.org/ros/ubuntu xenial main" >> /etc/apt/sources.list.d/ros-latest.list'
         sudo bash -c 'apt-key adv --keyserver "hkp://keyserver.ubuntu.com:80" --recv-key C1CF6E31E6BADE8868B172B4F42ED6FBAB17C654'
         sudo bash -c 'apt-get update && apt-get install -y ros-kinetic-desktop-full'
+        sudo bash -c 'apt-get install -y ros-kinetic-serial ros-kinetic-cv-bridge ros-kinetic-web-video-server ros-kinetic-rosbridge-suite fftw3 fftw3-dev pkg-config'
+        sudo bash -c 'rosdep init && rosdep update'
+        sudo bash -c 'source /opt/ros/kinetic/setup.bash'
 #    - name: Clean ROS Vision package
 #      run: |
 #        cd ros/src/vision
