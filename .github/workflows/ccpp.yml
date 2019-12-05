@@ -11,7 +11,7 @@ jobs:
     - uses: actions/checkout@v1
     - name: Install ROS 
       run: | 
-        sudo bash -c 'ls /'
+        sudo bash -c 'ls /etc/'
 #    - name: Clean ROS Vision package
 #      run: |
 #        cd ros/src/vision
