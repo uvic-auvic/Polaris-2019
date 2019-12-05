@@ -5,17 +5,15 @@ Undecided
 Dec. 5, 2019: ADR published
 
 ## Context
-The focus of this ADR is the ROS vision node. Specifically, the programming language the node is based in.
+The focus of this ADR is the ROS vision node. Specifically, the programming language the node is based in. AUVic's software team is putting effort towards developing vision solutions for the sub, notably object detection and associated actions. There is a need to ensure a smooth transition and ensure that solutions are developed as soon as possible for testing, as it is a core functionality of the sub. Furthermore, there has been interest to assign new team members to efforts related to `OpenCV`.
 
 ## Decision 
-A decision is proposed to fully refactor the vision node, including all its implementation in C++, to Python 3. The main motivation is the 
-need to have a fully functioning vision node, with code that is easily unit testable and who’s syntax is easier to understand than C++. 
+A decision is proposed to fully refactor the vision node, including all its implementation in C++, to Python 3. The main motivation is the need to have a fully functioning vision node, with code that is easily unit testable and who’s syntax is easier to understand than C++. 
 Specific motivations are listed:
 -	As it is shown that Python and C++ functionality is interchangeable [1], and Python syntax is easier to understand, a preference exists to focus on higher level applications. 
 - As opposed to employing the use of `CMakeLists.txt`, using Python only requires the Python interpreter itself [2]. As shown, nodes in Python with similar 
   functionality may be created with minimal dependencie on thos efiles [3]
-- A transition to Python as opposed to another scripting/programming language such as **Go, Rust, Java, or C** is preferred as Python
-  is a syntactically more preferable language for team members.
+- A transition to Python as opposed to another scripting/programming language such as **Go, Rust, Java, or C** [4] is preferred as Python is a syntactically more preferable language for team members.
 - A transition to Python eliminates the risk of dealing with memory management and desctructors. The need for those features have not
   been determined at the time of this writing.
 - A transition to Python will simplify the approach to writing automated unit tests, as syntax and lack of compile-time overhead 
@@ -29,7 +27,7 @@ Since any functionality in ROS with C++ may be also implemented in Python, minim
 - Since ROS abstracts the messages and services from the node’s implementation, no change is expected in other modes. 
 - Although Python is a scripted language as opposed to C++, no major performance considerations are obvious at the time of this writing 
 - Efforts towards writing automated tests will contain less overhead, and can be implemented with the `unittest` Python package.
-- Certain efforts that were orignnally C++ specific may be slowed, although that is not determined
+- Certain efforts that were orignnally in C++ specific may be slowed, although that is not determined.
 
 ## Comments
 _Relevant discussions and decisions may be recorded in this section for context_
