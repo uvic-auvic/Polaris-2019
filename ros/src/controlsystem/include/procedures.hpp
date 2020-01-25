@@ -179,7 +179,7 @@ class ObjectLocateProcedure: public Procedure {
 
     bool yaw_recorded;
     double start_yaw;
-		bool has_buoy_vector;
+		bool has_object_vector;
     bool has_heading;
 
     uint16_t x, y, z;

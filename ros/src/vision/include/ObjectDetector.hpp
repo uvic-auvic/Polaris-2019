@@ -22,7 +22,7 @@ private:
     Object_t object;
     u_int8_t min_match_count = 10;
     float ratio_thresh = 0.6f; // ratio for Lowe's ratio test
-    float object_width = 60.96f; 
+    float object_width = 60.96f;
     float object_height = 123.19f;
     cv::Rect object_rect; // rectangle around object
 

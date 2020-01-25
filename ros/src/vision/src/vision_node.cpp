@@ -5,7 +5,7 @@
 
 #include "EnableDetector.hpp"
 #include "CameraInput.hpp"
-#include "BuoyDetector.hpp"
+#include "ObjectDetector.hpp"
 //#include "GateDetector.hpp"
 //#include "PathDetector.hpp"
 
@@ -25,7 +25,7 @@ private:
     // Image capturing and detection systems.
     CameraInput cameraInput_;
     //GateDetector gateDetector_;
-    BuoyDetector buoyDetector_;
+    ObjectDetector objectDetector_;
     //PathDetector pathDetector_;
 
     // Detectors that are Enabled
@@ -49,9 +49,9 @@ public:
         nh_(nh),
         cameraInput_(),
         /* Ensure fully-qualified path is used for files */
-        gateDetector_(cameraInput_, "../cascades/GateCascade.xml"),
-        buoyDetector_(cameraInput_, "Jiangshi"),
-        pathDetector_(cameraInput_, ""),
+        //gateDetector_(cameraInput_, "../cascades/GateCascade.xml"),
+        objectDetector_(cameraInput_, "Jiangshi"),
+        //pathDetector_(cameraInput_, ""),
         enabledDetectors_(EnabledDetector::NONE)
     {
         pub_ = nh.advertise<vision::vector>("/vision/vector", 1);
@@ -70,24 +70,24 @@ public:
             {
                 switch (enabledDetectors_)
                 {
-                case EnabledDetector::GATE:
-                    gateDetector_.update();
-                    msg_.x = gateDetector_.getXFront();
-                    msg_.y = gateDetector_.getYFront();
-                    msg_.z = gateDetector_.getZFront();
+                //case EnabledDetector::GATE:
+                //    gateDetector_.update();
+                //    msg_.x = gateDetector_.getXFront();
+                //    msg_.y = gateDetector_.getYFront();
+                //    msg_.z = gateDetector_.getZFront();
+                //    break;
+                case EnabledDetector::OBJECT:
+                    objectDetector_.update();
+                    msg_.x = objectDetector_.getXFront();
+                    msg_.y = objectDetector_.getYFront();
+                    msg_.z = objectDetector_.getZFront();
                     break;
-                case EnabledDetector::BUOY:
-                    buoyDetector_.update();
-                    msg_.x = buoyDetector_.getXFront();
-                    msg_.y = buoyDetector_.getYFront();
-                    msg_.z = buoyDetector_.getZFront();
-                    break;
-                case EnabledDetector::PATH:
-                    pathDetector_.update();
-                    msg_.x = pathDetector_.getXFront();
-                    msg_.y = pathDetector_.getYFront();
-                    msg_.z = pathDetector_.getZFront();
-                    break;
+                //case EnabledDetector::PATH:
+                //    pathDetector_.update();
+                //    msg_.x = pathDetector_.getXFront();
+                //    msg_.y = pathDetector_.getYFront();
+                //    msg_.z = pathDetector_.getZFront();
+                //    break;
                 default:
                     msg_.x = 0;
                     msg_.y = 0;
