@@ -6,8 +6,8 @@
 #include "EnableDetector.hpp"
 #include "CameraInput.hpp"
 #include "BuoyDetector.hpp"
-#include "GateDetector.hpp"
-#include "PathDetector.hpp"
+//#include "GateDetector.hpp"
+//#include "PathDetector.hpp"
 
 // VisionSystem::EnabledDetector::NONE
 
@@ -24,9 +24,9 @@ private:
 
     // Image capturing and detection systems.
     CameraInput cameraInput_;
-    GateDetector gateDetector_;
+    //GateDetector gateDetector_;
     BuoyDetector buoyDetector_;
-    PathDetector pathDetector_;
+    //PathDetector pathDetector_;
 
     // Detectors that are Enabled
     EnabledDetector enabledDetectors_;
@@ -45,8 +45,8 @@ public:
 		return true;
 	}
 
-    VisionSystem(ros::NodeHandle& nh) : 
-        nh_(nh), 
+    VisionSystem(ros::NodeHandle& nh) :
+        nh_(nh),
         cameraInput_(),
         /* Ensure fully-qualified path is used for files */
         gateDetector_(cameraInput_, "../cascades/GateCascade.xml"),
@@ -62,11 +62,11 @@ public:
     int operator()()
     {
         int status = 0;
-        
+
         ros::Rate r(10); // Maybe Faster
         while(ros::ok() && !status)
         {
-            if(cameraInput_.update()) 
+            if(cameraInput_.update())
             {
                 switch (enabledDetectors_)
                 {
@@ -100,7 +100,7 @@ public:
             ros::spinOnce();
             r.sleep();
         }
-        
+
         return status;
     }
 };
