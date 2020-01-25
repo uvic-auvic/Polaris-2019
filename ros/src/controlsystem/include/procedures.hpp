@@ -212,7 +212,7 @@ class ObjectLocateProcedure: public Procedure {
       x(0), y(0), z(0)
 		}
 
-		ObectLocateProcedure* clone() const override
+		ObjectLocateProcedure* clone() const override
 		{
 			return new ObjectLocateProcedure(*this);
 		}
