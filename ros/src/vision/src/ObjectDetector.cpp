@@ -11,7 +11,7 @@ ObjectDetector::ObjectDetector(CameraInput& input, std::string object_type) : ca
     /* IMPORTANT: Must use fully qualified file path for ROS as relative file paths
        navigate from $ROS_HOME */
     if(object_type == "Jiangshi")
-        detector._img = cv::imread("../images/Jiangshi_lg.png", cv::IMREAD_GRAYSCALE);
+        detector.object_img = cv::imread("../images/Jiangshi_lg.png", cv::IMREAD_GRAYSCALE);
     else if(object_type == "Aswang")
         detector.object_img = cv::imread("../images/Aswang_lg.png", cv::IMREAD_GRAYSCALE);
     else if(object_type == "Draugr")
