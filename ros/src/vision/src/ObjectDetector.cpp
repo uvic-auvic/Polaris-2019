@@ -6,7 +6,7 @@
 #include "ros/console.h"
 #include <stdio.h>
 
-objectDetector::ObjectDetector(CameraInput& input, std::string object_type) : camera_input(input)
+ObjectDetector::ObjectDetector(CameraInput& input, std::string object_type) : camera_input(input)
 {
     /* IMPORTANT: Must use fully qualified file path for ROS as relative file paths
        navigate from $ROS_HOME */
