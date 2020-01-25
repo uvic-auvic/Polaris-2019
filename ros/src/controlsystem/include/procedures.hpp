@@ -202,7 +202,7 @@ class ObjectLocateProcedure: public Procedure {
   		this->current_heading = message;
 	  }
 
-		ObjectLocateProcedure(){
+		ObjectLocateProcedure()
 		: n{},
 			set_heading(n.serviceClient<navigation::nav_request>("/navigation/set_heading")),
       heading(n.subscribe("/navigation/heading", 1, &ObjectLocateProcedure::updateHeadingCallback, this)),
@@ -210,7 +210,7 @@ class ObjectLocateProcedure: public Procedure {
       vision_vector(n.subscribe("/vision/ObjectDetector", 1, &ObjectLocateProcedure::vectorUpdateCallback, this)),
       has_object_vector(false), has_heading(false), yaw_recorded(false), start_yaw(0.0),
       x(0), y(0), z(0)
-		}
+		{ }
 
 		ObjectLocateProcedure* clone() const override
 		{
