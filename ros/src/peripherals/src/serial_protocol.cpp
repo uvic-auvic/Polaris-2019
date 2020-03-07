@@ -1,11 +1,12 @@
 
 #include "serial_protocol.hpp"
 
-serial_protocol::serial_protocol(std::unique_ptr<serial::Serial> connection)
+serial_protocol::serial_protocol(std::unique_ptr<serial::Serial> connection, const protocol_node_E node)
 {
     if(connection)
     {
         this->connection = std::move(connection);
+        this->node = node;
     }
 }
 

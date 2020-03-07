@@ -9,6 +9,7 @@
 #include "peripherals/motor_enums.h"
 #include "peripherals/rpms.h"
 #include "peripherals/get_motor_enums.h"
+#include "serial_protocol.hpp"
 
 #define NUM_MOTORS (8)
 #define NUM_CHAR_PER_RPM (2)
@@ -45,16 +46,17 @@ public:
     bool getMotorEnums(MotorEnumsReq &req, MotorEnumsRes &res);
 
 private:
-    std::unique_ptr<serial::Serial> connection = nullptr;
+    std::unique_ptr<serial_protocol> serial_handle = nullptr;
     std::vector<double> pwm_multipliers;
-    std::string write(const std::string & out, bool ignore_response = true, std::string eol = "\n");
 };
 
 motor_controller::motor_controller(const std::string & port, int baud_rate, int timeout) :
         pwm_multipliers(NUM_MOTORS)
 {
     ROS_INFO("Connecting to motor_controller on port: %s", port.c_str());
-    connection = std::unique_ptr<serial::Serial>(new serial::Serial(port, (u_int32_t) baud_rate, serial::Timeout::simpleTimeout(timeout)));
+
+    auto connection = std::unique_ptr<serial::Serial>(new serial::Serial(port, (u_int32_t) baud_rate, serial::Timeout::simpleTimeout(timeout)));
+    this->serial_handle = std::unique_ptr<serial_protocol>(new serial_protocol(std::move(connection)));
 
     pwm_multipliers[peripherals::motor_enums::X_Right - 1] = X_RIGHT_MULT;
     pwm_multipliers[peripherals::motor_enums::X_Left - 1] = X_LEFT_MULT;
@@ -69,17 +71,6 @@ motor_controller::motor_controller(const std::string & port, int baud_rate, int 
 motor_controller::~motor_controller() {
     this->write("STP");
     connection->close();
-}
-
-std::string motor_controller::write(const std::string & out, bool ignore_response, std::string eol)
-{
-    connection->flush();
-    connection->write(out + eol);
-    //ROS_INFO("%s", out.c_str());
-    if (ignore_response) {
-        return "";
-    }
-    return connection->readline(65536ul, eol);
 }
 
 bool motor_controller::setMotorPWM(MotorReq &req, MotorRes &res)
@@ -153,15 +144,39 @@ bool motor_controller::stopAllMotors(MotorReq &req, MotorRes &res)
 
 bool motor_controller::getRPM(peripherals::rpms &rpms_msg)
 {
-    std::string rpm_string = this->write("RVA", false);
-    if (rpm_string.size() != (NUM_CHAR_PER_PWM * NUM_MOTORS) + 2) { //assuming eol is \r\n
-        return false;
+    bool ret = true;
+
+    protocol_allMessages_U receivedMessage = {};
+    if(serial_handle->request_data_message(PROTOCOL_MC_MESSAGE_REQUEST_MESSAGE_RPM_LOW, receivedMessage, protocol_MID_MC_motorRPMLow))
+    {
+        for(uint8_t motor = 0U; motor < 4U; motor++)
+        {
+            rpms_msg.rpms.push_back((double)receivedMessage.MC_motorRPMLow.motorSpeed[motor]);
+        }
+
+        ret &= true;
+    }
+    else
+    {
+        ret = false;
     }
 
-    for(uint8_t motor = 0; motor < NUM_MOTORS; motor++){
-	rpms_msg.rpms.push_back((double)( (uint16_t)((rpm_string[(motor * 2) + 1] << 8) | (rpm_string[motor * 2])) ));
+    receivedMessage = {0U};
+    if(serial_handle->request_data_message(PROTOCOL_MC_MESSAGE_REQUEST_MESSAGE_RPM_HIGH, receivedMessage, protocol_MID_MC_motorRPMLow))
+    {
+        for(uint8_t motor = 0U; motor < 4U; motor++)
+        {
+            rpms_msg.rpms.push_back((double)receivedMessage.MC_motorRPMHigh.motorSpeed[motor]);
+        }
+
+        ret &= true;
     }
-    return true;
+    else
+    {
+        ret = false;
+    }
+
+    return ret;
 }
 
 int main(int argc, char ** argv)

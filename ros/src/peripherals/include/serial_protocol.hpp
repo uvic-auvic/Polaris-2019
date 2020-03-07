@@ -17,6 +17,8 @@ public:
     bool request_data_message(const protocol_PBMessageRequest_message_E messageToRequest, protocol_allMessages_U &receivedMessage, protocol_MID_E expectedMID);
 private:
     std::unique_ptr<serial::Serial> connection = nullptr;
+    protocol_node_E node;
+    
 };
 
 
