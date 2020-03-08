@@ -161,7 +161,7 @@ public:
 		try {
 
 			// Wait 10s until power_board is ready
-			ros::service::waitForService("/power_board/AverageExtPressure", 10.0);
+			ros::service::waitForService("/power_board/AverageExtPressure", 10000);
 
 			ros::ServiceClient external_pressure = nodeHandle_.serviceClient<peripherals::avg_data>("/power_board/AverageExtPressure");
 			if(!external_pressure.call(srv))
