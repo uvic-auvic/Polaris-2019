@@ -160,7 +160,7 @@ public:
 
 		try {
 
-			// Wait 10s until power_board is ready
+			// Wait 10s until power_board is ready, timeout is in milliseconds.
 			ros::service::waitForService("/power_board/AverageExtPressure", 10000);
 
 			ros::ServiceClient external_pressure = nodeHandle_.serviceClient<peripherals::avg_data>("/power_board/AverageExtPressure");
