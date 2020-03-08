@@ -6,7 +6,6 @@
   <arg name="max_linear_vel" value="5.0"/>
   <arg name="max_angular_vel" value="180.0"/>
   <arg name="front_camera" value="front_camera"/>
-  <launch-prefix="gdb -ex run --args"/>
 
   <!-- Included include files -->
 
