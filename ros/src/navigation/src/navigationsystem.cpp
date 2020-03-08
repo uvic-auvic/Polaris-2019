@@ -306,7 +306,7 @@ public:
 			// Update depth.
 			navigation::depth_info depth_message;
 			updateDepth(depth_message);
-			depth_.publish(heading_message);
+			depth_.publish(depth_message);
 
 			ros::spinOnce();
 			loopRate_.sleep();
