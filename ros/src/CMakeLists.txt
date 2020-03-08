@@ -7,7 +7,6 @@ set(CATKIN_TOPLEVEL TRUE)
 
 # set(CMAKE_VERBOSE_MAKEFILE ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-set(CMAKE_CXX_FLAGS "-std=c++11 -DCMAKE_BUILD_TYPE=Debug")
 
 # search for catkin within the workspace
 set(_cmd "catkin_find_pkg" "catkin" "${CMAKE_SOURCE_DIR}")

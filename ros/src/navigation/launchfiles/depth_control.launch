@@ -7,8 +7,8 @@
     <node name="depth_control"
           pkg="navigation"
           type="depth_control"
-          launch-prefix="gdb -ex run --args">
-          
+          launch-prefix="xterm -e gdb -ex run --args">
+
         <param name="loop_rate" value="$(arg loop_rate)"/>
         <param name="Kp" value="$(arg Kp)"/>
         <param name="Ki" value="$(arg Ki)"/>
