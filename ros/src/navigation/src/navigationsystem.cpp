@@ -122,8 +122,11 @@ public:
 		peripherals::avg_data srv;
 		srv.request = request;
 
+		// Wait until serial device manager is ready
+    ros::service::waitForService("/power_board/AverageExtPressure", -1);
+
 		// Wait 10s until power_board is ready
-		ros::service::waitForService("/power_board/AverageExtPressure", 10.0);
+		//ros::service::waitForService("/power_board/AverageExtPressure", 10.0);
 
 		ros::ServiceClient external_pressure = nodeHandle_.serviceClient<peripherals::avg_data>("/power_board/AverageExtPressure");
 
@@ -296,14 +299,14 @@ public:
 		while(ros::ok())
 		{
 			// Update heading.
-			//navigation::nav heading_message;
-			//updateHeading(heading_message);
-			//heading_.publish(heading_message);
+			navigation::nav heading_message;
+			updateHeading(heading_message);
+			heading_.publish(heading_message);
 
 			// Update depth.
-			//navigation::depth_info depth_message;
-			//updateDepth(depth_message);
-			//depth_.publish(heading_message);
+			navigation::depth_info depth_message;
+			updateDepth(depth_message);
+			depth_.publish(heading_message);
 
 			ros::spinOnce();
 			loopRate_.sleep();
