@@ -1,3 +1,9 @@
-int16[] pwms
+float32 X_left_power_level
+float32 X_right_power_level
+float32 Y_front_power_level
+float32 Y_rear_power_level
+float32 Z_front_left_power_level
+float32 Z_front_right_power_level
+float32 Z_rear_left_power_level
+float32 Z_rear_right_power_level
 ---
-int16[] rpms

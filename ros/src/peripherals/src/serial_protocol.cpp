@@ -65,7 +65,7 @@ void serial_protocol::send_no_receive(const protocol_MID_E messageID, const prot
     }
 }
 
-bool serial_protocol::request_data_message(const protocol_PBMessageRequest_message_E messageToRequest, protocol_allMessages_U &receivedMessage, protocol_MID_E expectedMID)
+bool serial_protocol::request_data_message(const uint8_t messageToRequest, protocol_allMessages_U &receivedMessage, protocol_MID_E expectedMID)
 {
     bool ret = false;
 
@@ -75,7 +75,26 @@ bool serial_protocol::request_data_message(const protocol_PBMessageRequest_messa
         {
             protocol_allMessages_U messageToSend;
             protocol_message_S receiveBuffer;
-            messageToSend.POLARIS_messageRequest.requestedMessage = messageToRequest;
+            switch(this->node)
+            {
+                case PROTOCOL_NODE_POWER_BOARD:
+                {
+                    messageToSend.POLARIS_PBMessageRequest.requestedMessage = (protocol_PBMessageRequest_message_E)messageToRequest;
+                    break;
+                }
+                case PROTOCOL_NODE_MOTOR_CONTROLLER:
+                {
+                    messageToSend.POLARIS_MCMessageRequest.requestedMessage = (protocol_MCMessageRequest_message_E)messageToRequest;
+                    break;
+                }
+                case PROTOCOL_NODE_POLARIS:
+                default:
+                {
+
+                    break;
+                }
+
+            }
             ret = send_and_receive(protocol_MID_POLARIS_PBMessageRequest, messageToSend, sizeof(protocol_PBMessageRequest_S), receiveBuffer);
             
             if(receiveBuffer.messageID == expectedMID)

@@ -161,7 +161,7 @@ int main(int argc, char** argv) {
     rpm_controller rpm_ctrl;
 
     // Wait until motor controller is ready
-		ros::service::waitForService("/motor_controller/setAllMotorsPWM", -1);
+    ros::service::waitForService("/motor_controller/setAllMotorsPWM", -1);
 
     ros::Subscriber des_rpms = nh.subscribe<peripherals::rpms>("/nav/rpms", 1, &rpm_controller::receive_desired_rpms, &rpm_ctrl);
     ros::Subscriber act_rpms = nh.subscribe<peripherals::rpms>("/motor_controller/MotorsRPMs", 1, &rpm_controller::receive_actual_rpms, &rpm_ctrl);

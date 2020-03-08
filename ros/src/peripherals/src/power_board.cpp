@@ -36,7 +36,7 @@ power_board::power_board(const std::string &port, int baud_rate, int timeout)
 {
     ROS_INFO("Connecting to power_board on port: %s", port.c_str());
     auto connection = std::unique_ptr<serial::Serial>(new serial::Serial(port, (u_int32_t) baud_rate, serial::Timeout::simpleTimeout(timeout)));
-    this->serial_handle = std::unique_ptr<serial_protocol>(new serial_protocol(std::move(connection)));
+    this->serial_handle = std::unique_ptr<serial_protocol>(new serial_protocol(std::move(connection), PROTOCOL_NODE_POWER_BOARD));
 }
 
 power_board::~power_board()
