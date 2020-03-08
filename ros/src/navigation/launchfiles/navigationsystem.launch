@@ -35,7 +35,7 @@
         type="navigationsystem_node"
         required="true"
         output="screen"
-        launch-prefix="nohup xterm -e gdb -ex run --args">
+        launch-prefix="xterm -hold -e gdb -ex run --args">
 
     <!-- Pass in parameters for execution. -->
     <param name="loop_rate" value="$(arg loop_rate)"/>
