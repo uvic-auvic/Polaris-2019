@@ -45,7 +45,7 @@
     <arg name="max_angular_vel" value="$(arg max_angular_vel)"/>
   </include>
 	<!-- RPM Controller -->
-  <include file="$(find navigation)/launchfiles/rpm_controller.launch"/>
+  <include file="$(find navigation)/launchfiles/rpm_controller.launch">
   </include>
 
   <group if="$(arg record)">
