@@ -126,8 +126,11 @@ public:
     //ros::service::waitForService("/power_board/AverageExtPressure", -1);
 
 		try {
+			ROS_ERROR("Before");
+
 			// Wait 10s until power_board is ready
 	  	ros::service::waitForService("/power_board/AverageExtPressure", 10.0);
+			ROS_ERROR("during");
 
 			ros::ServiceClient external_pressure = nodeHandle_.serviceClient<peripherals::avg_data>("/power_board/AverageExtPressure");
 			if(!external_pressure)
@@ -135,6 +138,8 @@ public:
 				ROS_ERROR("Failed to acquire external pressure data during depth calibration.");
 				return false;
 			}
+			ROS_ERROR("After");
+
 
 		} catch (std::exception const &ex){
 
