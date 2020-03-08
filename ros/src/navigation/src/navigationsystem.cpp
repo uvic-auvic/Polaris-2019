@@ -325,7 +325,7 @@ public:
 	{
 		int status = 0;
 
-		updateDepth();
+		calibrateDepth();
 
 		while(ros::ok())
 		{
