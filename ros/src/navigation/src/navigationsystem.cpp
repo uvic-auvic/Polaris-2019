@@ -154,7 +154,7 @@ public:
 
 	bool calibrateDepth()
 	{
-		Request request;
+		peripherals::avg_data::Request request;
 		peripherals::avg_data srv;
 		srv.request = request;
 
