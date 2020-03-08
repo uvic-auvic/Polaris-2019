@@ -3,7 +3,7 @@
 //
 
 #include <ros/ros.h>
-#include "controllers.hpp" 
+#include "controllers.hpp"
 
 // Message Files
 #include "navigation/nav.h"
@@ -296,14 +296,14 @@ public:
 		while(ros::ok())
 		{
 			// Update heading.
-			navigation::nav heading_message;
-			updateHeading(heading_message);
-			heading_.publish(heading_message);
+			//navigation::nav heading_message;
+			//updateHeading(heading_message);
+			//heading_.publish(heading_message);
 
 			// Update depth.
-			navigation::depth_info depth_message;
-			updateDepth(depth_message);
-			depth_.publish(heading_message);
+			//navigation::depth_info depth_message;
+			//updateDepth(depth_message);
+			//depth_.publish(heading_message);
 
 			ros::spinOnce();
 			loopRate_.sleep();
