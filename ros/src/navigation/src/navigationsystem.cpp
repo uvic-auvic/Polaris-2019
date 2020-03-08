@@ -123,7 +123,7 @@ public:
 		srv.request = request;
 
 		// Wait until power_board is ready
-    ros::service::waitForService("/power_board/AverageExtPressure", -1);
+    //ros::service::waitForService("/power_board/AverageExtPressure", -1);
 
 		try {
 			// Wait 10s until power_board is ready
@@ -155,7 +155,6 @@ public:
 	{
 		if(!depthCalibrated_)
 		{
-			ROS_WARN("Depth must be calibrated before issuing commands to the navigation system.");
 			return;
 		}
 		message.desired_depth = currentControlRequest_.depth;
@@ -167,7 +166,6 @@ public:
 	{
 		if(!depthCalibrated_)
 		{
-			ROS_WARN("Depth must be calibrated before issuing commands to the navigation system.");
 			return;
 		}
 
