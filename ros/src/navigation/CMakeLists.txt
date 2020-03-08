@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(navigation)
-set(CMAKE_CXX_FLAGS "-Wall -Wextra -Wconversion -pedantic -std=c++11 -DCMAKE_BUILD_TYPE=Debug")
+set(CMAKE_CXX_FLAGS "-Wall -std=c++11 -DCMAKE_BUILD_TYPE=Debug")
 
 find_package(catkin REQUIRED COMPONENTS
   message_generation
