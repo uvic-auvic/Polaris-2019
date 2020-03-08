@@ -33,6 +33,7 @@ Since any functionality in ROS with C++ may be also implemented in Python, minim
 - If seen as a proof of concept for refactoring other nodes to Python, this isolated change will provide a basis for evaluating further refactoring
 
 ## Comments
+<<<<<<< HEAD
 _Relevant discussions and decisions may be recorded in this section for context_  
 
 Robwasmann Dec 7, 2019:
@@ -41,6 +42,12 @@ Also, I'm worried about Python crashing in more unexpected ways. Since it's only
 
 Robwasmann Dec 9, 2019:
 New members are always free to experiment with OpenCV in Python in the Vision testing repo, as well they can implement something first in Python and then convert it to C++
+=======
+_Relevant discussions and decisions may be recorded in this section for context_
+
+
+
+>>>>>>> upstream/development
 
 ## Links
 [1] https://www.theconstructsim.com/learn-ros-python-or-cpp/
