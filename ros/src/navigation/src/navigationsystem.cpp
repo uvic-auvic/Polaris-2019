@@ -171,7 +171,8 @@ public:
 			ROS_ERROR("Exception: %s", ex.what());
 
 		}
-
+		depthCalibrated_ = true;
+    return true;
 	}
 
 	void updateDepth(navigation::depth_info& message)
