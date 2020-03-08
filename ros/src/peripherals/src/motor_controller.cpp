@@ -32,7 +32,7 @@ using rosserv = ros::ServiceServer;
 
 class motor_controller {
 public:
-    motor_controller(const std::string & port, int baud_rate = 9600, int timeout = 1000);
+    motor_controller(const std::string & port, int baud_rate = 9600, int timeout = 100);
     ~motor_controller();
     bool setAllMotors(MotorsReq &req, MotorsRes &res);
     bool stopAllMotors(MotorReq &, MotorRes &);

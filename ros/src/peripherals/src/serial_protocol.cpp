@@ -73,18 +73,21 @@ bool serial_protocol::request_data_message(const uint8_t messageToRequest, proto
     {
         if(messageToRequest < PROTOCOL_PB_MESSAGE_REQUEST_MESSAGE_COUNT)
         {
-            protocol_allMessages_U messageToSend;
             protocol_message_S receiveBuffer;
             switch(this->node)
             {
                 case PROTOCOL_NODE_POWER_BOARD:
                 {
+                    protocol_allMessages_U messageToSend;
                     messageToSend.POLARIS_PBMessageRequest.requestedMessage = (protocol_PBMessageRequest_message_E)messageToRequest;
+                    ret = send_and_receive(protocol_MID_POLARIS_PBMessageRequest, messageToSend, sizeof(protocol_PBMessageRequest_S), receiveBuffer);
                     break;
                 }
                 case PROTOCOL_NODE_MOTOR_CONTROLLER:
                 {
+                    protocol_allMessages_U messageToSend;
                     messageToSend.POLARIS_MCMessageRequest.requestedMessage = (protocol_MCMessageRequest_message_E)messageToRequest;
+                    ret = send_and_receive(protocol_MID_POLARIS_MCMessageRequest, messageToSend, sizeof(protocol_MCMessageRequest_S), receiveBuffer);
                     break;
                 }
                 case PROTOCOL_NODE_POLARIS:
@@ -95,8 +98,7 @@ bool serial_protocol::request_data_message(const uint8_t messageToRequest, proto
                 }
 
             }
-            ret = send_and_receive(protocol_MID_POLARIS_PBMessageRequest, messageToSend, sizeof(protocol_PBMessageRequest_S), receiveBuffer);
-            
+
             if(receiveBuffer.messageID == expectedMID)
             {
                 receivedMessage = receiveBuffer.message;
