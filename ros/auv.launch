@@ -35,7 +35,7 @@
 
   <!-- Navigation Nodes -->
   <!-- Navigation System -->
-  <include file="$(find navigation)/launchfiles/navigationsystem.launch"
+  <include file="$(find navigation)/launchfiles/navigationsystem.launch">
     <arg name="max_linear_vel" value="$(arg max_linear_vel)"/>
     <arg name="max_angular_vel" value="$(arg max_angular_vel)"/>
   </include>
