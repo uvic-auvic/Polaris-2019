@@ -122,7 +122,7 @@ public:
 		peripherals::avg_data srv;
 		srv.request = request;
 
-		// Wait until serial device manager is ready
+		// Wait until power_board is ready
     ros::service::waitForService("/power_board/AverageExtPressure", -1);
 
 		// Wait 10s until power_board is ready

@@ -14,7 +14,7 @@
     },
 
     "power_board" : {
-        "ignore" : false,
+        "ignore" : true,
         "baud" : 115200,
         "ack_message" : "0200000400",
         "ack_response" : "0A0000295057525F4252440000",
@@ -46,5 +46,5 @@
 	"retry_count" : 20,
         "convert_to_bytes" : false
     }
-    
+
 }
