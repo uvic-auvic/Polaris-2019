@@ -326,4 +326,8 @@ int main(int argc, char** argv)
 
 	NavigationSystem navigationSystem(nh);
 
+	int return_code = navigationSystem();
+
+  ros::shutdown();
+  return return_code;
 }
