@@ -160,7 +160,7 @@ public:
 			ros::service::waitForService("/power_board/AverageExtPressure", 10.0);
 
 			ros::ServiceClient external_pressure = nodeHandle_.serviceClient<peripherals::avg_data>("/power_board/AverageExtPressure");
-			if(!external_pressure.call(srv))
+			if(!external_pressure.call())
 			{
 				ROS_ERROR("Failed to acquire external pressure data during depth calibration.");
 				return false;
