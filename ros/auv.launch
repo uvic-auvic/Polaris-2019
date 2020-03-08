@@ -11,7 +11,7 @@
 
   <!-- Peripheral/Monitor Nodes -->
   <include file="$(find monitor)/launchfiles/serial.launch"/>
-  <include file="$(find peripherals)/launchfiles/motors.launch"/>
+  <!--include file="$(find peripherals)/launchfiles/motors.launch"/-->
   <include file="$(find peripherals)/launchfiles/imu.launch"/>
   <!--include file="$(find peripherals)/launchfiles/power_board.launch"/-->
   <include file="$(find peripherals)/launchfiles/hydrophones.launch"/>
