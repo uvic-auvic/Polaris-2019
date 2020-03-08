@@ -6,7 +6,7 @@
           pkg="navigation"
           type="thrustmap"
           required="true"
-          launch-prefix="xterm -hold -e gdb -ex run --args &">
+          launch-prefix="gdb -ex run --args">
 
         <param name="max_linear_vel" value="$(arg max_linear_vel)"/>
         <param name="max_angular_vel" value="$(arg max_angular_vel)"/>
