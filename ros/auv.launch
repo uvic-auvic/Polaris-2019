@@ -43,9 +43,10 @@
   <include file="$(find navigation)/launchfiles/thrustmap.launch">
     <arg name="max_linear_vel" value="$(arg max_linear_vel)"/>
     <arg name="max_angular_vel" value="$(arg max_angular_vel)"/>
-  <!-- /include-->
+  </include>
 	<!-- RPM Controller -->
   <include file="$(find navigation)/launchfiles/rpm_controller.launch"/>
+  </include>
 
   <group if="$(arg record)">
     <node name="rosbag" pkg="rosbag" type="record"  args="-o $(arg save_location) -a -x /video/(.*)"/>
