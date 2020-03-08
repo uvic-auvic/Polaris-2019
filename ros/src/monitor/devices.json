@@ -14,7 +14,7 @@
     },
 
     "power_board" : {
-        "ignore" : true,
+        "ignore" : false,
         "baud" : 115200,
         "ack_message" : "0200000400",
         "ack_response" : "0A0000295057525F4252440000",
@@ -38,7 +38,7 @@
     },
 
     "motor_controller" : {
-	"ignore" : true,
+	"ignore" : false,
         "baud" : 9600,
         "ack_message" : "0200000500",
         "ack_response" : "0A0000154D54525F434F4E5400",
@@ -50,5 +50,4 @@
         "big_endian_message": false,
         "big_endian_response" : false
     }
-
 }
