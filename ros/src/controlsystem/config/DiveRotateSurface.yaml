@@ -1,4 +1,3 @@
-#go to launchfile/tests/controlsystem_idle_test and modify what yaml file there
 states:
   dive:
     procedure: DiveProcedure
@@ -7,7 +6,11 @@ states:
   idle:
     procedure: IdleProcedure
     error: idle
-    next: idle
+    next: rotate90
+  rotate90:
+    procedure: RotateRightAngleProcedure
+    error: IdleProcedure
+    next: surface
   surface:
     procedure: SurfaceProcedure
     error: surface

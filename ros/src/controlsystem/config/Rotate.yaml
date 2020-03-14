@@ -1,0 +1,9 @@
+states:
+  rotate90:
+    procedure: RotateRightAngleProcedure
+    error: idle
+    next: idle
+  idle:
+    procedure: IdleProcedure
+    error: idle
+    next: idle

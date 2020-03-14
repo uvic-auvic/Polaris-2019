@@ -1,0 +1,5 @@
+states:
+  idle:
+    procedure: IdleProcedure
+    error: idle
+    next: idle

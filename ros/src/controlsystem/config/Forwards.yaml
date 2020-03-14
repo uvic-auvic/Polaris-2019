@@ -1,0 +1,9 @@
+states:
+  forwards:
+    procedure: ForwardsProcedure
+    error: idle
+    next: idle
+  idle:
+    procedure: IdleProcedure
+    error: idle
+    next: idle

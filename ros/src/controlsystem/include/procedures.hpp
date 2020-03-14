@@ -1,6 +1,8 @@
 #ifndef PROCEDURES_HPP
 #define PROCEDURES_HPP
 
+#define DIVE_DEPTH_TOLERANCE = 0.05 // meters?
+
 /*
   This class provides definitions of the different
   functors that are responsible for the various movement
@@ -261,12 +263,14 @@ class ObjectLocateProcedure: public Procedure {
 };
 
 class DiveProcedure : public Procedure {
+
   	ros::NodeHandle n;
   	ros::ServiceClient set_heading;
   	ros::Subscriber depth;
 
   	double desired_depth;
   	double current_depth;
+
 	public:
 
 		void depthUpdateCallback(navigation::depth_info message)
@@ -289,7 +293,6 @@ class DiveProcedure : public Procedure {
 		Procedure::ReturnCode operator()() override
 		{
 			navigation::nav_request srv;
-
 			srv.request.depth = 0.5;
 			srv.request.yaw_rate = 0;
 			srv.request.forwards_velocity = 0;
@@ -300,7 +303,7 @@ class DiveProcedure : public Procedure {
 				ROS_WARN("Heading service call failed.");
 			}
 
-			if(std::abs(desired_depth - current_depth) < 0.01)
+			if(std::abs(desired_depth - current_depth) < DIVE_DEPTH_TOLERANCE)
 				return Procedure::ReturnCode::NEXT;
 
 		return Procedure::ReturnCode::CONTINUE;
@@ -308,21 +311,25 @@ class DiveProcedure : public Procedure {
 };
 
 class IdleProcedure : public Procedure {
+
 	  ros::NodeHandle n;
 	  ros::ServiceClient set_heading;
+
 	public:
+
 		IdleProcedure()
 		: n{}, set_heading(n.serviceClient<navigation::nav_request>("/navigation/set_heading"))
 		{}
+
 		IdleProcedure* clone() const override
 		{
 			return new IdleProcedure(*this);
 		}
 
-		Procedure::ReturnCode operator()() override {
+		Procedure::ReturnCode operator()() override
+    {
+
 			navigation::nav_request srv;
-
-
 			srv.request.depth = 0;
 			srv.request.yaw_rate = 0;
 			srv.request.forwards_velocity = 0;
@@ -338,7 +345,9 @@ class IdleProcedure : public Procedure {
 };
 
 class RotateProcedure : public Procedure {
+
 		private:
+
 			ros::NodeHandle n;
 			ros::ServiceClient full_stop_srv;
 			ros::Subscriber heading;
@@ -347,14 +356,19 @@ class RotateProcedure : public Procedure {
 			double start_yaw;
 			bool has_heading;
 			navigation::nav current_heading;
-		public:
-			RotateProcedure(){
 
-			}
-			RotateProcedure* clone() const override{
+		public:
+
+			RotateProcedure()
+      {}
+
+			RotateProcedure* clone() const override
+      {
 				return new RotateProcedure(*this);
 			}
-			Procedure::ReturnCode operator()() override{
+
+			Procedure::ReturnCode operator()() override
+      {
 
 				return Procedure::ReturnCode::CONTINUE;
 			}
@@ -363,6 +377,7 @@ class RotateProcedure : public Procedure {
 
 
 class RotateRightAngleProcedure: public Procedure {
+
 		ros::NodeHandle n;
 		ros::ServiceClient set_heading;
 		ros::ServiceClient full_stop_srv;
@@ -374,6 +389,7 @@ class RotateRightAngleProcedure: public Procedure {
 		navigation::nav current_heading;
 
 	public:
+
   	void updateHeadingCallback(navigation::nav message){
 		  has_heading = true;
   		this->current_heading = message;
@@ -393,7 +409,8 @@ class RotateRightAngleProcedure: public Procedure {
 			return new RotateRightAngleProcedure(*this);
 		}
 
-		Procedure::ReturnCode operator()() override {
+		Procedure::ReturnCode operator()() override
+    {
   		// Ensure the procedure can access the data.
 			if(!has_heading) {
   		  ROS_WARN("ORIENTATION NOT YET AVAILABLE DELAYING UNTIL AVAILABLE.");
@@ -413,8 +430,7 @@ class RotateRightAngleProcedure: public Procedure {
 			srv.request.forwards_velocity = 0;
 			srv.request.sideways_velocity = 0;
 
-			if (!set_heading.call(srv))
-			{
+			if (!set_heading.call(srv)) {
 				ROS_WARN("Heading service call failed.");
 			}
 
@@ -432,6 +448,7 @@ class RotateRightAngleProcedure: public Procedure {
 
 
 class ForwardsProcedure : public Procedure {
+
   	ros::NodeHandle n;
   	ros::ServiceClient set_heading;
   	ros::ServiceClient full_stop;
@@ -444,7 +461,8 @@ class ForwardsProcedure : public Procedure {
 
 	public:
 
-		void updateHeadingCallback(navigation::nav message) {
+		void updateHeadingCallback(navigation::nav message)
+    {
 			has_heading = true;
 			current_heading = message;
 		}
@@ -457,11 +475,13 @@ class ForwardsProcedure : public Procedure {
 			has_heading(false), set_time(false), start_time{}
 		{ }
 
-		ForwardsProcedure* clone() const override {
+		ForwardsProcedure* clone() const override
+    {
 			return new ForwardsProcedure(*this);
 		}
 
-		Procedure::ReturnCode operator()() override {
+		Procedure::ReturnCode operator()() override
+    {
 				if(!has_heading) {
 					ROS_WARN("ORIENTATION NOT YET AVAILABLE DELAYING UNTIL AVAILABLE.");
 					return Procedure::ReturnCode::CONTINUE;
@@ -504,7 +524,8 @@ class SurfaceProcedure : public Procedure {
 				return new SurfaceProcedure(*this);
 			}
 
-			Procedure::ReturnCode operator()() override {
+			Procedure::ReturnCode operator()() override
+      {
 				navigation::nav_request srv;
 
 				srv.request.depth = 0;
@@ -512,8 +533,7 @@ class SurfaceProcedure : public Procedure {
 				srv.request.forwards_velocity = 0;
 				srv.request.sideways_velocity = 0;
 
-				if (!set_heading.call(srv))
-				{
+				if (!set_heading.call(srv)) {
 					ROS_WARN("Heading service call failed.");
 				}
 
