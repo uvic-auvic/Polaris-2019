@@ -14,7 +14,7 @@
 #include "vision/vector.h"
 #include "vision/change_detection.h"
 
-static const diveTolerance = 0.05 // meters?
+static const float diveTolerance = 0.05 // meters?
 
 namespace procedures {
 class Procedure {
