@@ -7,11 +7,15 @@ states:
     procedure: IdleProcedure
     error: idle
     next: rotate90
+  idle-stop:
+    procedure: IdleProcedure
+    error: idle-stop
+    next: idle-stop
   rotate90:
     procedure: RotateRightAngleProcedure
-    error: IdleProcedure
+    error: idle
     next: surface
   surface:
     procedure: SurfaceProcedure
     error: surface
-    next: surface
+    next: idle-stop
