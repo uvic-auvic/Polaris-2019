@@ -1,0 +1,21 @@
+name: ROS CI Docker Build
+
+on:
+  push:
+    branches:
+      - 'master'
+      - 'development'
+  pull_request:
+    branches:
+      - 'master'
+      - 'development'
+
+jobs:
+  build:
+
+    runs-on: ubuntu-16.04
+
+    steps:
+    - name: Build ROS Project
+      run: |
+        sudo bash -c 'cd ros/ && ./docker_make.sh'
