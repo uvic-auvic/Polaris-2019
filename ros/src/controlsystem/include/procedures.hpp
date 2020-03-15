@@ -1,8 +1,6 @@
 #ifndef PROCEDURES_HPP
 #define PROCEDURES_HPP
 
-#define DIVE_DEPTH_TOLERANCE = 0.05 // meters?
-
 /*
   This class provides definitions of the different
   functors that are responsible for the various movement
@@ -15,6 +13,8 @@
 #include "navigation/nav_request.h"
 #include "vision/vector.h"
 #include "vision/change_detection.h"
+
+static const diveTolerance = 0.05 // meters?
 
 namespace procedures {
 class Procedure {
@@ -171,18 +171,18 @@ class GateLocateProcedure: public Procedure {
 class ObjectLocateProcedure: public Procedure {
 
 		ros::NodeHandle n;
+    ros::ServiceClient set_heading;
+    ros::Subscriber heading;
     ros::ServiceClient full_stop_srv;
-		ros::ServiceClient set_heading;
-    ros::ServiceClient objet_detection;
-		ros::Subscriber heading;
     ros::Subscriber vision_vector;
+    ros::ServiceClient objet_detection;
     navigation::nav current_heading;
 		navigation::nav nav_heading;
 
+    bool has_object_vector;
+    bool has_heading;
     bool yaw_recorded;
     double start_yaw;
-		bool has_object_vector;
-    bool has_heading;
 
     uint16_t x, y, z;
 
@@ -303,7 +303,7 @@ class DiveProcedure : public Procedure {
 				ROS_WARN("Heading service call failed.");
 			}
 
-			if(std::abs(desired_depth - current_depth) < DIVE_DEPTH_TOLERANCE)
+			if(std::abs(desired_depth - current_depth) < diveTolerance)
 				return Procedure::ReturnCode::NEXT;
 
 		return Procedure::ReturnCode::CONTINUE;
