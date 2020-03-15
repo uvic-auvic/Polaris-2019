@@ -16,6 +16,7 @@ jobs:
     runs-on: ubuntu-16.04
 
     steps:
-    - name: Build ROS Project
+    - uses: actions/checkout@v1
+    - name: Build ROS Project via Docker
       run: |
         sudo bash -c 'cd ros/ && ./docker_make.sh'
