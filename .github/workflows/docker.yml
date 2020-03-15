@@ -19,4 +19,5 @@ jobs:
     - uses: actions/checkout@v1
     - name: Build ROS Project via Docker
       run: |
-        sudo bash -c 'cd ros/ && ./docker_make.sh'
+        cd ros/
+        ./docker_make.sh
