@@ -1,0 +1,21 @@
+states:
+  dive:
+    procedure: DiveProcedure
+    error: DiveProcedure
+    next: idle
+  idle:
+    procedure: IdleProcedure
+    error: idle
+    next: rotate90
+  idle-stop:
+    procedure: IdleProcedure
+    error: idle-stop
+    next: idle-stop
+  rotate90:
+    procedure: RotateRightAngleProcedure
+    error: idle
+    next: surface
+  surface:
+    procedure: SurfaceProcedure
+    error: surface
+    next: idle-stop

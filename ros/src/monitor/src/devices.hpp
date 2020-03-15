@@ -18,8 +18,8 @@ using GetSerialsReq = monitor::GetSerialDevices::Request;
 using GetSerialsRes = monitor::GetSerialDevices::Response;
 
 class DeviceNotFoundException : public std::runtime_error {
-public:    
-    DeviceNotFoundException(const std::string & dev) 
+public:
+    DeviceNotFoundException(const std::string & dev)
     :std::runtime_error("Could not find device \"" + dev + "\"")
     {}
 };
@@ -27,7 +27,7 @@ public:
 class device_property {
 public:
     device_property(
-        string name, bool ignore, string ack_m, string ack_r, int baud, int timeout, 
+        string name, bool ignore, string ack_m, string ack_r, int baud, int timeout,
         int retry_count, bool convert_to_bytes, size_t size_of_message, size_t size_of_response,
         bool big_endian_message, bool big_endian_response)
      : name(name)
@@ -47,11 +47,11 @@ public:
     std::string ack_message;
     std::string ack_response;
     int baud;
+    serial::Timeout timeout;
     int retry_count;
     bool convert_to_bytes;
     size_t size_of_message;
     size_t size_of_response;
-    serial::Timeout timeout;
     bool big_endian_message;
     bool big_endian_response;
 };
