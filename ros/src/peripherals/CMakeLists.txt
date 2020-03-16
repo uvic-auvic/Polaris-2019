@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(peripherals)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -std=c++11 -DCMAKE_BUILD_TYPE=Debug")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Werror -O0 -std=c++11 -DCMAKE_BUILD_TYPE=Debug")
 
 find_package(catkin REQUIRED COMPONENTS
   #message_generation
@@ -16,7 +16,6 @@ find_package(catkin REQUIRED COMPONENTS
 
 add_service_files(
   FILES
-  motor.srv
   motors.srv
   power_enable.srv
   avg_data.srv
@@ -69,12 +68,8 @@ find_package(serial REQUIRED)
 
 find_package(peripherals REQUIRED)
 
-add_executable(depth_sensor src/depth_sensor_node.cpp)
-target_link_libraries(depth_sensor ${catkin_LIBRARIES})
-add_dependencies(depth_sensor peripherals_generate_messages_cpp ${catkin_EXPORTED_TARGETS})
-
 add_executable(motor_controller src/motor_controller.cpp)
-target_link_libraries(motor_controller ${catkin_LIBRARIES} ${serial_LIBRARIES})
+target_link_libraries(motor_controller ${catkin_LIBRARIES} ${serial_LIBRARIES} ${peripherals_LIBRARIES})
 add_dependencies(motor_controller monitor_generate_messages_cpp peripherals_generate_messages_cpp ${catkin_EXPORTED_TARGETS})
 
 add_executable(power_board src/power_board.cpp)

@@ -1,11 +1,12 @@
 
 #include "serial_protocol.hpp"
 
-serial_protocol::serial_protocol(std::unique_ptr<serial::Serial> connection)
+serial_protocol::serial_protocol(std::unique_ptr<serial::Serial> connection, const protocol_node_E node)
 {
     if(connection)
     {
         this->connection = std::move(connection);
+        this->node = node;
     }
 }
 
@@ -64,7 +65,7 @@ void serial_protocol::send_no_receive(const protocol_MID_E messageID, const prot
     }
 }
 
-bool serial_protocol::request_data_message(const protocol_PBMessageRequest_message_E messageToRequest, protocol_allMessages_U &receivedMessage, protocol_MID_E expectedMID)
+bool serial_protocol::request_data_message(const uint8_t messageToRequest, protocol_allMessages_U &receivedMessage, protocol_MID_E expectedMID)
 {
     bool ret = false;
 
@@ -72,11 +73,32 @@ bool serial_protocol::request_data_message(const protocol_PBMessageRequest_messa
     {
         if(messageToRequest < PROTOCOL_PB_MESSAGE_REQUEST_MESSAGE_COUNT)
         {
-            protocol_allMessages_U messageToSend;
             protocol_message_S receiveBuffer;
-            messageToSend.POLARIS_messageRequest.requestedMessage = messageToRequest;
-            ret = send_and_receive(protocol_MID_POLARIS_PBMessageRequest, messageToSend, sizeof(protocol_PBMessageRequest_S), receiveBuffer);
-            
+            switch(this->node)
+            {
+                case PROTOCOL_NODE_POWER_BOARD:
+                {
+                    protocol_allMessages_U messageToSend;
+                    messageToSend.POLARIS_PBMessageRequest.requestedMessage = (protocol_PBMessageRequest_message_E)messageToRequest;
+                    ret = send_and_receive(protocol_MID_POLARIS_PBMessageRequest, messageToSend, sizeof(protocol_PBMessageRequest_S), receiveBuffer);
+                    break;
+                }
+                case PROTOCOL_NODE_MOTOR_CONTROLLER:
+                {
+                    protocol_allMessages_U messageToSend;
+                    messageToSend.POLARIS_MCMessageRequest.requestedMessage = (protocol_MCMessageRequest_message_E)messageToRequest;
+                    ret = send_and_receive(protocol_MID_POLARIS_MCMessageRequest, messageToSend, sizeof(protocol_MCMessageRequest_S), receiveBuffer);
+                    break;
+                }
+                case PROTOCOL_NODE_POLARIS:
+                default:
+                {
+
+                    break;
+                }
+
+            }
+
             if(receiveBuffer.messageID == expectedMID)
             {
                 receivedMessage = receiveBuffer.message;

@@ -73,6 +73,6 @@ add_executable(navigationsystem_node src/navigationsystem.cpp src/controllers.cp
 target_link_libraries(navigationsystem_node ${catkin_LIBRARIES})
 add_dependencies(navigationsystem_node navigation_generate_messages_cpp ${catkin_EXPORTED_TARGETS})
 
-add_executable(rpm_controller src/rpm_controller.cpp src/controllers.cpp src/controllers.hpp src/pid.cpp src/pid.h)
-target_link_libraries(rpm_controller ${catkin_LIBRARIES})
-add_dependencies(rpm_controller navigation_generate_messages_cpp ${catkin_EXPORTED_TARGETS})
+# add_executable(rpm_controller src/rpm_controller.cpp src/controllers.cpp src/controllers.hpp src/pid.cpp src/pid.h)
+# target_link_libraries(rpm_controller ${catkin_LIBRARIES})
+# add_dependencies(rpm_controller navigation_generate_messages_cpp ${catkin_EXPORTED_TARGETS})
