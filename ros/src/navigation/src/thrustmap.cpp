@@ -2,7 +2,6 @@
 #include "navigation/nav.h"
 #include "navigation/thrusts.h"
 #include "peripherals/rpms.h"
-#include "peripherals/motor.h"
 #include "peripherals/motors.h"
 #include "peripherals/motor_enums.h"
 

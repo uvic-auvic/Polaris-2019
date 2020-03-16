@@ -4,7 +4,6 @@
 #include <memory>
 #include <serial/serial.h>
 #include "monitor/GetSerialDevice.h"
-#include "peripherals/motor.h"
 #include "peripherals/motors.h"
 #include "peripherals/motor_enums.h"
 #include "peripherals/rpms.h"
@@ -31,8 +30,6 @@
 
 #define MOTOR_POWER_BASE    (127U)
 
-using MotorReq = peripherals::motor::Request;
-using MotorRes = peripherals::motor::Response;
 using MotorsReq = peripherals::motors::Request;
 using MotorsRes = peripherals::motors::Response;
 using MotorEnumsReq = peripherals::get_motor_enums::Request;
@@ -44,7 +41,6 @@ public:
     motor_controller(const std::string & port, int baud_rate = 9600, int timeout = 100);
     ~motor_controller();
     bool setAllMotors(MotorsReq &req, MotorsRes &res);
-    bool stopAllMotors(MotorReq &, MotorRes &);
     bool getRPM(peripherals::rpms &rpms_msg);
     bool getMotorEnums(MotorEnumsReq &req, MotorEnumsRes &res);
 
@@ -119,13 +115,6 @@ void motor_controller::stopAllMotors(void)
     this->serial_handle->send_no_receive(protocol_MID_POLARIS_motorSetSpeed, messageToSend, sizeof(protocol_motorSetSpeed_S));
 }
 
-bool motor_controller::stopAllMotors(MotorReq &req, MotorRes &res)
-{
-    this->stopAllMotors();
-
-    return true;
-}
-
 bool motor_controller::getRPM(peripherals::rpms &rpms_msg)
 {
     bool ret = true;
@@ -188,7 +177,6 @@ int main(int argc, char ** argv)
     ros::Publisher rpm_pub = nh.advertise<peripherals::rpms>("MotorsRPMs", 1);
 
     /* Setup all the Different services/commands which we can call. Each service does its own error handling */
-    rosserv stp = nh.advertiseService("stopAllMotors", &motor_controller::stopAllMotors, &m);
     rosserv sam = nh.advertiseService("setAllMotors", &motor_controller::setAllMotors, &m);
 
     int loop_rate;
