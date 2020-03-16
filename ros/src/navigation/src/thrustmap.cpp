@@ -81,7 +81,7 @@ thrust_controller::thrust_controller(std::string node_name) :
 {
     this->nh.getParam("max_linear_vel", this->max_linear_rate);
     this->nh.getParam("max_angular_vel", this->max_angular_rate);
-    this->motors_set_all_srv = nh.serviceClient<peripherals::motors>("/motor_controller/setAllMotorsPWM");
+    this->motors_set_all_srv = nh.serviceClient<peripherals::motors>("/motor_controller/setAllMotors");
 }
 
 void thrust_controller::do_thrust_matrix(double tau[E_MATRIX_COLUMNS], double thrust_value[peripherals::motor_enums::COUNT]){
@@ -144,7 +144,7 @@ int main(int argc, char **argv)
     ros::NodeHandle nh("~");
 
     // Wait until motor controller is ready
-    ros::service::waitForService("/motor_controller/setAllMotorsPWM", -1);
+    ros::service::waitForService("/motor_controller/setAllMotors", -1);
 
     thrust_controller tc("motor_controller");
     ros::Subscriber joy = nh.subscribe<navigation::nav>

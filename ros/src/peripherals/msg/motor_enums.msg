@@ -1,5 +1,5 @@
-uint8 X_RIGHT = 0
-uint8 X_LEFT = 1
+uint8 X_LEFT = 0
+uint8 X_RIGHT = 1
 uint8 Y_FRONT = 2
 uint8 Y_REAR = 3
 uint8 Z_FRONT_LEFT = 4
