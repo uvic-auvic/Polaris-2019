@@ -68,10 +68,6 @@ find_package(serial REQUIRED)
 
 find_package(peripherals REQUIRED)
 
-add_executable(depth_sensor src/depth_sensor_node.cpp)
-target_link_libraries(depth_sensor ${catkin_LIBRARIES})
-add_dependencies(depth_sensor peripherals_generate_messages_cpp ${catkin_EXPORTED_TARGETS})
-
 add_executable(motor_controller src/motor_controller.cpp)
 target_link_libraries(motor_controller ${catkin_LIBRARIES} ${serial_LIBRARIES} ${peripherals_LIBRARIES})
 add_dependencies(motor_controller monitor_generate_messages_cpp peripherals_generate_messages_cpp ${catkin_EXPORTED_TARGETS})
